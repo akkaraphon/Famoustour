@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "641842361238",
+    "firebase_url": "https://famoustour-164914.firebaseio.com",
+    "project_id": "famoustour-164914",
+    "storage_bucket": "famoustour-164914.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641842361238:android:011264158cd7e798",
+        "android_client_info": {
+          "package_name": "com.cpc.famoustour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "641842361238-kespqoea997h2ad2p7p2nga0fhh1qaei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7l379DkG6OwaSrN1El2HDsg6BiX-wjw4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
