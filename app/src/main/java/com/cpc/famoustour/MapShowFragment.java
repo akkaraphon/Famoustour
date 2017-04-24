@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 
+import com.cpc.famoustour.adapter.timerTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -30,6 +31,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Timer;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -65,6 +68,12 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ((MainActivity) getActivity()).setActionBarTitle("แผนที่");
         // Inflate the layout for this fragment
+
+        new Timer().schedule(new timerTask(),0,5000);
+
+
+
+
 
 
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
@@ -144,38 +153,34 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         return myLocation;
     }
 
-
     public class SetLocation extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            String result = feedJson();
+            try {
 
-            return result;
+                LatLng latlng = getLocation();
+
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = new FormBody.Builder()
+                        .add("latlng", String.valueOf(latlng))
+                        .add("idUser",sp.getString("",null))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("http://famoustour.pe.hu/android_GPS.php")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String result = response.body().string();
+
+                return result;
+            } catch (Exception e) {
+
+            }
+            return null;
         }
-    }
-
-    private String feedJson() {
-        try {
-            OkHttpClient client = new OkHttpClient();
-
-            RequestBody body = new FormBody.Builder()
-                    .add("latlng","")
-                    .add("idUser","")
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url("http://famoustour.pe.hu/android_login.php")
-                    .post(body)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            String result = response.body().string();
-
-            return result;
-        } catch (Exception e) {
-
-        }
-        return null;
     }
 }

@@ -12,7 +12,7 @@
         android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="Time"
+        android:text="Username"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -30,7 +30,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:text="Place"
+            android:text="Email"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -43,7 +43,7 @@
             android:layout_below="@+id/post_title"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:text="Detail" />
+            android:text="Tel" />
 
     </LinearLayout>
 

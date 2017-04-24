@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,8 @@ public class ProgramFragment extends Fragment {
     private CustomAdapterProgram mAdapter;
     ProgressBar progressBar;
     private static final int REFRESH_SCREEN = 1;
+    Handler handle;
+    Runnable runable;
 
 
     public ProgramFragment() {

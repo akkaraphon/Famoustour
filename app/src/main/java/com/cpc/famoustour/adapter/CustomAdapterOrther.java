@@ -46,7 +46,7 @@ public class CustomAdapterOrther extends BaseAdapter {
         }
         switch (position){
             case 0:
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.dictionary ,0, 0);
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.profile ,0, 0);
                 textView.setText("ข้อมูลส่วนตัว");
                 textView.setGravity(Gravity.CENTER);
                 break;
@@ -56,17 +56,17 @@ public class CustomAdapterOrther extends BaseAdapter {
                 textView.setGravity(Gravity.CENTER);
                 break;
             case 2:
-                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.dictionary ,0, 0);
+                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.pdf ,0, 0);
                 textView.setText("ดาวน์โหลดโปรแกรมทัวร์");
                 textView.setGravity(Gravity.CENTER);
                 break;
             case 3:
-                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.present ,0, 0);
+                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.gallery ,0, 0);
                 textView.setText("ดูรูปภาพ");
                 textView.setGravity(Gravity.CENTER);
                 break;
             default:
-                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.present ,0, 0);
+                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.fromsubmit ,0, 0);
                 textView.setText("ตอบแบบสอบถาม");
                 textView.setGravity(Gravity.CENTER);
                 break;

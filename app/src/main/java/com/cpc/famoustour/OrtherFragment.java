@@ -54,10 +54,13 @@ public class OrtherFragment extends Fragment {
                     case 2:
                         Toast.makeText(getActivity(), "ดาวโหลดโปรแกรมทัวร์", Toast.LENGTH_SHORT).show();
                         break;
-                    default:
+                    case 3:
                         Toast.makeText(getActivity(), "ข้อมูลรูปภาพ", Toast.LENGTH_SHORT).show();
                         intent = new Intent(getActivity(), ImgViewActivity.class);
                         startActivity(intent);
+                        break;
+                    default:
+                        Toast.makeText(getActivity(), "ดาวโหลดโปรแกรมทัวร์", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
