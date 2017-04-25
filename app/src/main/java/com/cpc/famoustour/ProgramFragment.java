@@ -147,7 +147,7 @@ public class ProgramFragment extends Fragment {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.pe.hu/android_pgSchedule.php")
+                    .url("http://famoustour.apidech.com/android_pgSchedule.php")
                     .post(body)
                     .build();
 

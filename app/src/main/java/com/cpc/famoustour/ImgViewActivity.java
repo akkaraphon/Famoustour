@@ -74,7 +74,7 @@ public class ImgViewActivity extends AppCompatActivity {
                 urlss.add("https://placeholdit.imgix.net/~text?txtsize=33&txt=NO%20IMAGE&w=200&h=200");
             } else {
                 for (int i = 0; i <= imguser.length; i++) {
-                    url = "http://famoustour.pe.hu/picture/user/"
+                    url = "http://famoustour.apidech.com/picture/user/"
                             + imguser[i].getID_USER()
                             + "/" + imguser[i].getID_PGTOUR()
                             + "/" + imguser[i].getURL_PIC();
@@ -108,7 +108,7 @@ public class ImgViewActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.pe.hu/android_imgView.php")
+                    .url("http://famoustour.apidech.com/android_imgView.php")
                     .post(body)
                     .build();
 

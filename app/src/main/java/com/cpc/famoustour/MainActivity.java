@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity{
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.pe.hu/android_login.php")
+                    .url("http://famoustour.apidech.com/android_login.php")
                     .post(body)
                     .build();
 

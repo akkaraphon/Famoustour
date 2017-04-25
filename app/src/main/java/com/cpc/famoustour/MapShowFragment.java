@@ -15,18 +15,16 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 
-import com.cpc.famoustour.adapter.timerTask;
+import com.cpc.famoustour.adapter.TimerTaskAdapter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -68,8 +66,8 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ((MainActivity) getActivity()).setActionBarTitle("แผนที่");
         // Inflate the layout for this fragment
-
-        new Timer().schedule(new timerTask(),0,5000);
+        TimerTaskAdapter timertask = new TimerTaskAdapter(getContext());
+        new Timer().schedule(timertask,0,5000);
 
 
 
@@ -169,7 +167,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
                         .build();
 
                 Request request = new Request.Builder()
-                        .url("http://famoustour.pe.hu/android_GPS.php")
+                        .url("http://famoustour.apidech.com/android_GPS.php")
                         .post(body)
                         .build();
 

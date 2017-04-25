@@ -23,7 +23,6 @@ public class OrtherFragment extends Fragment {
 
     SharedPreferences sp;
     SharedPreferences.Editor editor;
-    Button _btnlogOut;
     Intent intent;
 
 
@@ -60,7 +59,7 @@ public class OrtherFragment extends Fragment {
                         startActivity(intent);
                         break;
                     default:
-                        Toast.makeText(getActivity(), "ดาวโหลดโปรแกรมทัวร์", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "ตอบแบบสอบถาม", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }

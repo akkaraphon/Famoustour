@@ -68,6 +68,7 @@ public class CustomAdapterOrther extends BaseAdapter {
             default:
                 textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.fromsubmit ,0, 0);
                 textView.setText("ตอบแบบสอบถาม");
+                textView.setEnabled(false);
                 textView.setGravity(Gravity.CENTER);
                 break;
         }
