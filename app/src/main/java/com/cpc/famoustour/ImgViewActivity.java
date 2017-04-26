@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,8 +28,6 @@ public class ImgViewActivity extends AppCompatActivity {
     private ImgViewAdapter mAdapter;
     private GridView mGridView;
     int id_user;
-    String[] urls;
-    String url;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
 
@@ -56,45 +53,28 @@ public class ImgViewActivity extends AppCompatActivity {
     }
 
 
-    public class GetImg extends AsyncTask<Object, Object, List<String>> {
+    public class GetImg extends AsyncTask<Object, Object, List<ImgUser>> {
 
         @Override
-        protected List<String> doInBackground(Object... params) {
+        protected List<ImgUser> doInBackground(Object... params) {
 
             String result = feedJson();
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<Collection<ImgUser>>() {}.getType();
-            Collection<ImgUser> enums = gson.fromJson(result, collectionType);
-            ImgUser[] imguser = enums.toArray(new ImgUser[enums.size()]);
 
-            Log.d("urlimg",imguser[0].getURL_PIC());
+            Type collectionType = new TypeToken<List<ImgUser>>() {}.getType();
+            List<ImgUser> urlss = gson.fromJson(result, collectionType);
 
-            List<String> urlss = new ArrayList<String>();
-            if(imguser[0].getURL_PIC().equals("-1")){
-                urlss.add("https://placeholdit.imgix.net/~text?txtsize=33&txt=NO%20IMAGE&w=200&h=200");
-            } else {
-                for (int i = 0; i <= imguser.length; i++) {
-                    url = "http://famoustour.apidech.com/picture/user/"
-                            + imguser[i].getID_USER()
-                            + "/" + imguser[i].getID_PGTOUR()
-                            + "/" + imguser[i].getURL_PIC();
-                    Log.d("loopURL",url);
-                    urlss.add(url);
-                }
-            }
+            //Log.d("imguser", String.valueOf(imguser));
 
-            Log.d("urls", String.valueOf(urlss));
             return urlss;
         }
 
         @Override
-        protected void onPostExecute(List<String> s) {
-            super.onPostExecute(s);
-
-            urls = s.toArray(new String[s.size()]);
+        protected void onPostExecute(List<ImgUser> imgUsers) {
+            super.onPostExecute(imgUsers);
 
             mGridView = (GridView) findViewById(R.id.gridview);
-            mAdapter = new ImgViewAdapter(ImgViewActivity.this, urls);
+            mAdapter = new ImgViewAdapter(ImgViewActivity.this, imgUsers);
             mGridView.setAdapter(mAdapter);
         }
     }

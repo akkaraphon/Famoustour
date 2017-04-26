@@ -66,13 +66,6 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ((MainActivity) getActivity()).setActionBarTitle("แผนที่");
         // Inflate the layout for this fragment
-        TimerTaskAdapter timertask = new TimerTaskAdapter(getContext());
-        new Timer().schedule(timertask,0,5000);
-
-
-
-
-
 
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
         _btnLost.setOnClickListener(new View.OnClickListener() {

@@ -17,6 +17,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cpc.famoustour.adapter.TimerTaskAdapter;
+
+import java.util.Timer;
+
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,6 +50,9 @@ public class MainActivity extends AppCompatActivity{
                 Log.d("TesttKey", "Key: " + key + " Value: " + value);
             }
         }
+
+        TimerTaskAdapter timertask = new TimerTaskAdapter(MainActivity.this);
+        new Timer().schedule(timertask,0,5000);
 
         sp = getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         editor = sp.edit();
@@ -141,7 +148,7 @@ public class MainActivity extends AppCompatActivity{
             if(typeUser.equals("M")){
                 switch (position){
                     case 0 :
-                        return new ProgramFragment();
+                        return new ProgramManageFragment();
                     case 1 :
                         return new MapShowFragment();
                     default:

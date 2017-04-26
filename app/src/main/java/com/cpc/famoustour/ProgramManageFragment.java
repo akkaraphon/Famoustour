@@ -68,12 +68,15 @@ public class ProgramManageFragment extends Fragment {
 
         mListView = (ListView) v.findViewById(R.id.listView);
         mListView.setVisibility(View.INVISIBLE);
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg, View arg1, int arg2, long arg3) {
                 Intent intent;
                 intent = new Intent(getActivity(), EditProgramActivity.class);
-                intent.putExtra("id_pgtour_sd", arg2 + 1);
+                intent.putExtra("id_pgtour_sd", mAdapter.arrID.get(arg2));
                 startActivity(intent);
+
+                //Toast.makeText(getActivity(), mAdapter.arrID.get(arg2), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -129,9 +132,10 @@ public class ProgramManageFragment extends Fragment {
             Type collectionType = new TypeToken<List<Schedule>>() {
             }.getType();
             List<Schedule> schedules = gson.fromJson(result, collectionType);
-            //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
+            //Schedule[] schedule = schedules.toArray(new Schedule[schedules.size()]);
 
-            //Log.d("testtest", result);
+            //Log.d("schedule_ID", result);
+
             return schedules;
         }
 

@@ -5,14 +5,14 @@ package com.cpc.famoustour.model;
  */
 
 public class Schedule {
+
     /**
      * DAY_PGTOUR_SD : 1
      * TIME_S_PGTOUR_SD : 0730
      * TIME_E_PGTOUR_SD : 0845
      * DETAIL_PGTOUR_SD : คณะพร้อมกันที่สนามบินเชียงราย เตรียมเดินทางสู่กรุงเทพมหานคร
-     * NAME_TH_ATTRAC : อนุสาวรีย์ชัยสมรภูมิ
-     * NAME_TH_HOTEL : 0
-     * NAME_TH_RES : 0
+     * NAME_TH : อนุสาวรีย์ชัยสมรภูมิ
+     * ID_PGTOUR_SD : 34
      */
 
     private String DAY_PGTOUR_SD;
@@ -20,6 +20,7 @@ public class Schedule {
     private String TIME_E_PGTOUR_SD;
     private String DETAIL_PGTOUR_SD;
     private String NAME_TH;
+    private String ID_PGTOUR_SD;
 
     public String getDAY_PGTOUR_SD() {
         return DAY_PGTOUR_SD;
@@ -61,4 +62,11 @@ public class Schedule {
         this.NAME_TH = NAME_TH;
     }
 
+    public String getID_PGTOUR_SD() {
+        return ID_PGTOUR_SD;
+    }
+
+    public void setID_PGTOUR_SD(String ID_PGTOUR_SD) {
+        this.ID_PGTOUR_SD = ID_PGTOUR_SD;
+    }
 }

@@ -2,6 +2,7 @@ package com.cpc.famoustour.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.cpc.famoustour.R;
 import com.cpc.famoustour.model.Schedule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ public class CustomAdapterProgram extends BaseAdapter {
 
     private LayoutInflater mInflater;
     List<Schedule> schedules;
+    public ArrayList<String> arrID;
     private ViewHolder mViewHolder;
 
     String time_s;
@@ -30,6 +33,7 @@ public class CustomAdapterProgram extends BaseAdapter {
         mInflater = (LayoutInflater) activity.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         schedules = schedule;
+        arrID = new ArrayList<String>();
     }
 
 
@@ -52,6 +56,7 @@ public class CustomAdapterProgram extends BaseAdapter {
         TextView time;
         TextView place;
         TextView detail;
+
     }
 
     @Override
@@ -84,6 +89,10 @@ public class CustomAdapterProgram extends BaseAdapter {
         mViewHolder.time.setText(time_s + " - " + time_e);
         mViewHolder.place.setText(schedule.getNAME_TH());
         mViewHolder.detail.setText(schedule.getDETAIL_PGTOUR_SD());
+
+        Log.d("schedule_ID",schedule.getID_PGTOUR_SD());
+
+        arrID.add(schedule.getID_PGTOUR_SD());
 
         return convertView;
     }
