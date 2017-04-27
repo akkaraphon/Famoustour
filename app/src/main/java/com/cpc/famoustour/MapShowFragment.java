@@ -99,9 +99,6 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         final String name = sp.getString("NAME_TH_USER", null) + " " + sp.getString("LASTNAME_TH_USER", null) + "(" + sp.getString("SEX_USER", null) + ")";
         final String tel = sp.getString("TEL_USER", null);
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-
         CameraPosition cameraPosition = new CameraPosition.Builder().target(getLocation()).zoom(20).build();
         googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         googlemap.addMarker(new MarkerOptions().position(getLocation()).title(name).snippet(tel));
@@ -122,8 +119,6 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
     public LatLng getLocation() {
 
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lng = location.getLongitude();
         double lat = location.getLatitude();
