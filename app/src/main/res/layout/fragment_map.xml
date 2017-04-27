@@ -22,39 +22,36 @@
             android:layout_height="match_parent"
             android:layout_marginTop="40dp"
             android:layout_weight="2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="40dp">
 
             <Button
                 android:id="@+id/btn_Here"
-                android:layout_width="70dp"
-                android:layout_height="90dp"
-                android:layout_weight="1.49"
-                android:background="@drawable/maphere"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_here"
                 android:textColor="#fff"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_Lost"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_weight="0.63"
-                android:background="@drawable/getting_lost" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_help" />
 
             <Button
                 android:id="@+id/btn_navi"
-                android:layout_width="81dp"
-                android:layout_height="80dp"
-                android:layout_weight="0.42"
-                android:background="@drawable/iconna" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_navi" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/txt_testUpdataUI"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="test"
-            android:gravity="center"/>
 
     </LinearLayout>
 </FrameLayout>

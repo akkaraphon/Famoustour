@@ -103,6 +103,7 @@ public class ProgramFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         ((MainActivity) getActivity())
                 .setActionBarTitle("โปรแกรมทัวร์");
     }

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cpc.famoustour.LoginActivity">
+    tools:context="com.cpc.famoustour.LoginActivity"
+    android:background="@color/colorBackgroud">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -27,7 +28,9 @@
             android:layout_marginBottom="30dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:hint="E-mail"/>
+            android:hint="E-mail"
+            android:drawableLeft="@drawable/mail"
+            android:drawablePadding="10dp"/>
 
         <Button
             android:layout_width="match_parent"

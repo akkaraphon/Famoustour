@@ -32,18 +32,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Timer;
-
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class MapShowFragment extends Fragment implements OnMapReadyCallback  {
+public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
     Button _btnLost;
     Button _btnHere;
     private GoogleMap googleMap;
     MapFragment mMap;
-    Marker now;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     String url = "https://fcm.googleapis.com/fcm/send";
@@ -60,7 +54,6 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback  {
 
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
-        ((MainActivity) getActivity()).setActionBarTitle("แผนที่");
         // Inflate the layout for this fragment
 
         mMap = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapView);
@@ -109,19 +102,16 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback  {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
 
-        LatLng Location = getLocation();
-
-        googlemap.setMyLocationEnabled(true);
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(Location).zoom(20).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(getLocation()).zoom(20).build();
         googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         googlemap.addMarker(new MarkerOptions().position(getLocation()).title(name).snippet(tel));
+
 
         _btnHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LatLng Location = getLocation();
 
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(Location).zoom(20).build();
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(getLocation()).zoom(20).build();
                 googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 googlemap.clear();
                 googlemap.addMarker(new MarkerOptions().position(getLocation()).title(name).snippet(tel));
@@ -139,5 +129,11 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback  {
         double lat = location.getLatitude();
         LatLng myLocation = new LatLng(lat, lng);
         return myLocation;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 }

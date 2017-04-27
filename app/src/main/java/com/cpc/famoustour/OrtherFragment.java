@@ -48,7 +48,7 @@ public class OrtherFragment extends Fragment {
                         startActivity(intent);
                         break;
                     case 1:
-                        Toast.makeText(getActivity(), "ข้อเพื่อนทริป", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "ข้อมูลเพื่อนทริป", Toast.LENGTH_SHORT).show();
                         break;
                     case 2:
                         Toast.makeText(getActivity(), "ดาวโหลดโปรแกรมทัวร์", Toast.LENGTH_SHORT).show();

@@ -68,7 +68,6 @@ public class ProgramManageFragment extends Fragment {
 
         mListView = (ListView) v.findViewById(R.id.listView);
         mListView.setVisibility(View.INVISIBLE);
-
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg, View arg1, int arg2, long arg3) {
                 Intent intent;

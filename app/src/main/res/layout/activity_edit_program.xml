@@ -4,23 +4,133 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cpc.famoustour.EditProgramActivity">
+    tools:context="com.cpc.famoustour.EditProgramActivity"
+    android:background="@color/colorBackgroud">
 
     <LinearLayout
         android:layout_width="304dp"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="150dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:text="แก้ไขรายการโปรแกรมทัวร์"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#2a6643" />
+
+        <TextView
+            android:id="@+id/txt_nameTH"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="หัวข้อรายการทัวร์"
+            android:layout_gravity="center"
+            android:textSize="15dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="เวลาเริ่ม"
+                android:drawableLeft="@drawable/alarmblack"
+                android:drawablePadding="10dp"/>
 
+            <EditText
+                android:id="@+id/txt_time_S"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="xxxx" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="เวลาจบ"
+                android:drawableLeft="@drawable/alarmoffblack"
+                android:drawablePadding="10dp"/>
+
+            <EditText
+                android:id="@+id/txt_time_E"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="xxxx" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="รายละเอียดสถานที่"
+                android:drawableLeft="@drawable/createblack"
+                android:drawablePadding="2dp"/>
+
+            <EditText
+                android:id="@+id/txt_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textMultiLine" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="submit"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="#ffffff"/>
+
+            <Button
+                android:id="@+id/btn_cancle"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="cancle"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="#ffffff"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

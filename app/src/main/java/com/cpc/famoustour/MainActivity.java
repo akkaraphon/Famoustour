@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity{
             if(typeUser.equals("M")){
                 switch (position){
                     case 0 :
-                        return new ProgramManageFragment();
+                        return new ProgramFragment();
                     case 1 :
                         return new MapShowFragment();
                     default:
