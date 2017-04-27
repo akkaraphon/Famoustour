@@ -8,13 +8,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,26 +28,22 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Timer;
-
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapShowFragment extends Fragment implements OnMapReadyCallback{
+public class MapShowFragment extends Fragment implements OnMapReadyCallback  {
 
     Button _btnLost;
     Button _btnHere;
     private GoogleMap googleMap;
     MapFragment mMap;
+    Marker now;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     String url = "https://fcm.googleapis.com/fcm/send";
@@ -66,6 +62,11 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         ((MainActivity) getActivity()).setActionBarTitle("แผนที่");
         // Inflate the layout for this fragment
+
+        mMap = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapView);
+
+        TimerTaskAdapter timertask = new TimerTaskAdapter(getActivity(), v);
+        new Timer().schedule(timertask, 0, 3000);
 
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
         _btnLost.setOnClickListener(new View.OnClickListener() {
@@ -89,14 +90,12 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        mMap = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapView);
         _btnHere = (Button) v.findViewById(R.id.btn_Here);
 
         mMap.getMapAsync(this);
 
         return v;
     }
-
 
 
     public void onMapReady(final GoogleMap googlemap) {
@@ -128,8 +127,6 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
                 googlemap.addMarker(new MarkerOptions().position(getLocation()).title(name).snippet(tel));
             }
         });
-
-        //googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
     }
 
     public LatLng getLocation() {
@@ -142,36 +139,5 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback{
         double lat = location.getLatitude();
         LatLng myLocation = new LatLng(lat, lng);
         return myLocation;
-    }
-
-    public class SetLocation extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-
-                LatLng latlng = getLocation();
-
-                OkHttpClient client = new OkHttpClient();
-
-                RequestBody body = new FormBody.Builder()
-                        .add("latlng", String.valueOf(latlng))
-                        .add("idUser",sp.getString("",null))
-                        .build();
-
-                Request request = new Request.Builder()
-                        .url("http://famoustour.apidech.com/android_GPS.php")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                String result = response.body().string();
-
-                return result;
-            } catch (Exception e) {
-
-            }
-            return null;
-        }
     }
 }

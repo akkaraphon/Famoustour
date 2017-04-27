@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        TimerTaskAdapter timertask = new TimerTaskAdapter(MainActivity.this);
-        new Timer().schedule(timertask,0,5000);
 
         sp = getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         editor = sp.edit();
