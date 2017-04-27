@@ -122,6 +122,9 @@ public class ProgramFragment extends Fragment {
             List<Schedule> schedules = gson.fromJson(result, collectionType);
             //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
+            editor = sp.edit();
+            editor.putInt("ID_PGTOUR",schedules.get(0).getID_PGTOUR());
+            editor.commit();
             //Log.d("testtest", result);
             return schedules;
         }

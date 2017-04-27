@@ -24,6 +24,7 @@ import okhttp3.Response;
 public class EditProgramActivity extends AppCompatActivity {
 
     String id_pgtour_sd;
+    String id_pgtour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class EditProgramActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         id_pgtour_sd = bundle.getString("id_pgtour_sd");
+        id_pgtour = bundle.getString("id_pgtour");
         new GetEdit().execute();
 
 

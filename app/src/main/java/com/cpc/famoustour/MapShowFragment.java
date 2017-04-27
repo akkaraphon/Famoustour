@@ -59,7 +59,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         mMap = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapView);
 
         TimerTaskAdapter timertask = new TimerTaskAdapter(getActivity(), v);
-        new Timer().schedule(timertask, 0, 3000);
+        new Timer().schedule(timertask, 0, 1000);
 
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
         _btnLost.setOnClickListener(new View.OnClickListener() {

@@ -73,6 +73,7 @@ public class ProgramManageFragment extends Fragment {
                 Intent intent;
                 intent = new Intent(getActivity(), EditProgramActivity.class);
                 intent.putExtra("id_pgtour_sd", mAdapter.arrID.get(arg2));
+                intent.putExtra("id_pgtour", mAdapter.schedules.get(0).getID_PGTOUR());
                 startActivity(intent);
 
                 //Toast.makeText(getActivity(), mAdapter.arrID.get(arg2), Toast.LENGTH_LONG).show();

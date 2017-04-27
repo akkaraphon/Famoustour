@@ -22,8 +22,8 @@ import java.util.List;
 public class CustomAdapterProgram extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    List<Schedule> schedules;
-    public ArrayList<String> arrID;
+    public List<Schedule> schedules;
+    public ArrayList<Integer> arrID;
     private ViewHolder mViewHolder;
 
     String time_s;
@@ -33,7 +33,7 @@ public class CustomAdapterProgram extends BaseAdapter {
         mInflater = (LayoutInflater) activity.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         schedules = schedule;
-        arrID = new ArrayList<String>();
+        arrID = new ArrayList<Integer>();
     }
 
 
@@ -90,7 +90,7 @@ public class CustomAdapterProgram extends BaseAdapter {
         mViewHolder.place.setText(schedule.getNAME_TH());
         mViewHolder.detail.setText(schedule.getDETAIL_PGTOUR_SD());
 
-        Log.d("schedule_ID",schedule.getID_PGTOUR_SD());
+        Log.d("schedule_ID", String.valueOf(schedule.getID_PGTOUR_SD()));
 
         arrID.add(schedule.getID_PGTOUR_SD());
 
