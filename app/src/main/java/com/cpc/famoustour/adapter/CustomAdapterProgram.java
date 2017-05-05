@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.cpc.famoustour.R;
+import com.cpc.famoustour.model.Day;
 import com.cpc.famoustour.model.Schedule;
 
 import java.util.ArrayList;
@@ -22,29 +23,24 @@ import java.util.List;
 public class CustomAdapterProgram extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    public List<Schedule> schedules;
-    public ArrayList<Integer> arrID;
+    public List<Day> days;
     private ViewHolder mViewHolder;
 
-    String time_s;
-    String time_e;
-
-    public CustomAdapterProgram(Activity activity, List<Schedule> schedule) {
+    public CustomAdapterProgram(Activity activity, List<Day> day) {
         mInflater = (LayoutInflater) activity.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
-        schedules = schedule;
-        arrID = new ArrayList<Integer>();
+        days = day;
     }
 
 
     @Override
     public int getCount() {
-        return schedules.size();
+        return days.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return schedules.get(position);
+        return days.get(position);
     }
 
     @Override
@@ -53,21 +49,17 @@ public class CustomAdapterProgram extends BaseAdapter {
     }
 
     private static class ViewHolder {
-        TextView time;
-        TextView place;
-        TextView detail;
+        TextView day_schedule;
 
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.list_detail, parent, false);
+            convertView = mInflater.inflate(R.layout.list_day, parent, false);
             mViewHolder = new ViewHolder();
 
-            mViewHolder.time = (TextView) convertView.findViewById(R.id.time);
-            mViewHolder.place = (TextView) convertView.findViewById(R.id.place);
-            mViewHolder.detail = (TextView) convertView.findViewById(R.id.detail);
+            mViewHolder.day_schedule = (TextView) convertView.findViewById(R.id.day_schedule);
 
             convertView.setTag(mViewHolder);
 
@@ -75,24 +67,11 @@ public class CustomAdapterProgram extends BaseAdapter {
             mViewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Schedule schedule = schedules.get(position);
+        Day day = days.get(position);
 
+        //Log.d("testtest", day.getDAY_PGTOUR_SD());
 
-        if (schedule.getTIME_S_PGTOUR_SD().length() > 1) {
-            time_s = schedule.getTIME_S_PGTOUR_SD().substring(0, 2) + ":" + schedule.getTIME_S_PGTOUR_SD().substring(2, 4);
-        } if (schedule.getTIME_E_PGTOUR_SD().length() > 1) {
-            time_e = schedule.getTIME_E_PGTOUR_SD().substring(0, 2) + ":" + schedule.getTIME_E_PGTOUR_SD().substring(2, 4);
-        }else if(schedule.getTIME_S_PGTOUR_SD().length() == 0 && schedule.getTIME_E_PGTOUR_SD().length() == 0){
-            time_e = "";time_s = "";
-        }
-
-        mViewHolder.time.setText(time_s + " - " + time_e);
-        mViewHolder.place.setText(schedule.getNAME_TH());
-        mViewHolder.detail.setText(schedule.getDETAIL_PGTOUR_SD());
-
-        Log.d("schedule_ID", String.valueOf(schedule.getID_PGTOUR_SD()));
-
-        arrID.add(schedule.getID_PGTOUR_SD());
+        mViewHolder.day_schedule.setText("วันที่ : " + day.getDAY_PGTOUR_SD());
 
         return convertView;
     }

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.cpc.famoustour.model.StaticClass;
 import com.cpc.famoustour.model.User;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     String token;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
+    StaticClass sc = new StaticClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_login.php")
+                    .url(sc.URL + "/android_login.php")
                     .post(body)
                     .build();
 

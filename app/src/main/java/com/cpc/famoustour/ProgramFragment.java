@@ -2,6 +2,7 @@ package com.cpc.famoustour;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,11 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.cpc.famoustour.adapter.CustomAdapterProgram;
-import com.cpc.famoustour.model.Schedule;
+import com.cpc.famoustour.model.Day;
+import com.cpc.famoustour.model.StaticClass;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -44,8 +48,7 @@ public class ProgramFragment extends Fragment {
     private CustomAdapterProgram mAdapter;
     ProgressBar progressBar;
     private static final int REFRESH_SCREEN = 1;
-    Handler handle;
-    Runnable runable;
+    StaticClass sc = new StaticClass();
 
 
     public ProgramFragment() {
@@ -63,8 +66,22 @@ public class ProgramFragment extends Fragment {
 
         progressBar = (ProgressBar) v.findViewById(R.id.pg_progress);
 
+
         mListView = (ListView) v.findViewById(R.id.listView);
         mListView.setVisibility(View.INVISIBLE);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> arg, View arg1, int arg2, long arg3) {
+                Intent intent;
+                intent = new Intent(getActivity(), ScheduleActivity.class);
+                intent.putExtra("day", arg2+1);
+                Log.d("dayday", String.valueOf(arg2+1));
+                intent.putExtra("IdUser",idUser);
+                Log.d("ooooooooooooo2", String.valueOf(sp.getInt("ID_USER",-1)));
+                startActivity(intent);
+
+                Toast.makeText(getActivity(), "วันที่ " + String.valueOf(arg2+1) , Toast.LENGTH_LONG).show();
+            }
+        });
 
         //new GetSchedule().execute();
         startScan();
@@ -90,7 +107,7 @@ public class ProgramFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case REFRESH_SCREEN:
-                    new GetSchedule().execute();
+                    new GetDay().execute();
                     progressBar.setVisibility(View.INVISIBLE); // Hide ProgressBar
                     break;
                 default:
@@ -109,33 +126,36 @@ public class ProgramFragment extends Fragment {
     }
 
 
-    public class GetSchedule extends AsyncTask<Object, Object, List<Schedule>> {
+    public class GetDay extends AsyncTask<Object, Object, List<Day>> {
 
         @Override
-        protected List<Schedule> doInBackground(Object... params) {
+        protected List<Day> doInBackground(Object... params) {
             String result = feedJson();
             Gson gson = new Gson();
 
 
-            Type collectionType = new TypeToken<List<Schedule>>() {
+            Type collectionType = new TypeToken<List<Day>>() {
             }.getType();
-            List<Schedule> schedules = gson.fromJson(result, collectionType);
+            List<Day> days = gson.fromJson(result, collectionType);
             //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
             editor = sp.edit();
-            editor.putInt("ID_PGTOUR",schedules.get(0).getID_PGTOUR());
+            editor.putInt("ID_PGTOUR",days.get(0).getID_PGTOUR());
             editor.commit();
-            //Log.d("testtest", result);
-            return schedules;
+            Log.d("testtest", String.valueOf(days.get(0).getID_PGTOUR()));
+            Log.d("testtest", String.valueOf(sp.getInt("ID_PGTOUR",-1)));
+
+            Log.d("testtest", result);
+            return days;
         }
 
         @Override
-        protected void onPostExecute(List<Schedule> s) {
+        protected void onPostExecute(List<Day> s) {
             showData(s);
         }
     }
 
-    private void showData(List<Schedule> jsonString) {
+    private void showData(List<Day> jsonString) {
         mListView.setVisibility(View.VISIBLE);
         mAdapter = new CustomAdapterProgram(getActivity(), jsonString);
         mListView.setAdapter(mAdapter);
@@ -151,13 +171,14 @@ public class ProgramFragment extends Fragment {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_pgSchedule.php")
+                    .url(sc.URL + "/android_pgSchedule.php?type=day")
                     .post(body)
                     .build();
 
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            Log.d("Schedule", result);
+            Log.d("Schedulesss", result);
+
             return result;
         } catch (Exception e) {
 

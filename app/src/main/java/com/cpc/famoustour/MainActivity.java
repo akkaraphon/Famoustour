@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.cpc.famoustour.adapter.TimerTaskAdapter;
+import com.cpc.famoustour.model.StaticClass;
 
 import java.util.Timer;
 
@@ -27,7 +28,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity{
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     String tokenUser;
+    StaticClass sc = new StaticClass();
 
     private ViewPager mViewPager;
 
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void onLogoutPressed() {
-        sp = getSharedPreferences("App_Config",Context.MODE_PRIVATE);
+        sp = getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         editor = sp.edit();
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("ออกจากระบบ");
@@ -132,7 +134,6 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -141,37 +142,15 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("Type Session",typeUser);
-
-            if(typeUser.equals("M")){
-                switch (position){
-                    case 0 :
-                        return new ProgramFragment();
-                    case 1 :
-                        return new MapShowFragment();
-                    default:
-                        return new OrtherFragment();
-                }
-            }else if(typeUser.equals("O")){
-                switch (position){
-                    case 0 :
-                        return new ProgramFragment();
-                    case 1 :
-                        return new MapShowFragment();
-                    default:
-                        return new OrtherFragment();
-                }
-            }else if(typeUser.equals("E") || typeUser.equals("G")){
-                switch (position){
-                    case 0 :
-                        return new ProgramManageFragment();
-                    case 1 :
-                        return new MapShowFragment();
-                    default:
-                        return new OrtherFragment();
-                }
+            Log.d("Type Session", typeUser);
+            switch (position) {
+                case 0:
+                    return new ProgramFragment();
+                case 1:
+                    return new MapShowFragment();
+                default:
+                    return new OrtherFragment();
             }
-            return null;
         }
 
         @Override
@@ -216,15 +195,15 @@ public class MainActivity extends AppCompatActivity{
     private String feedJson() {
         try {
             OkHttpClient client = new OkHttpClient();
-            Log.d("intentSession",emailUser);
+            Log.d("intentSession", emailUser);
 
             RequestBody body = new FormBody.Builder()
-                    .add("email",emailUser)
-                    .add("status","logout")
+                    .add("email", emailUser)
+                    .add("status", "logout")
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_login.php")
+                    .url(sc.URL + "/android_login.php")
                     .post(body)
                     .build();
 

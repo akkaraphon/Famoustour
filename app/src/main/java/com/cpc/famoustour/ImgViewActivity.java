@@ -10,6 +10,7 @@ import android.widget.GridView;
 
 import com.cpc.famoustour.adapter.ImgViewAdapter;
 import com.cpc.famoustour.model.ImgUser;
+import com.cpc.famoustour.model.StaticClass;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -30,6 +31,7 @@ public class ImgViewActivity extends AppCompatActivity {
     int id_user;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
+    StaticClass sc = new StaticClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +90,7 @@ public class ImgViewActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_imgView.php")
+                    .url(sc.URL + "/android_imgView.php")
                     .post(body)
                     .build();
 

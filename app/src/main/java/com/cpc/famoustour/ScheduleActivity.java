@@ -1,27 +1,20 @@
 package com.cpc.famoustour;
 
-
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.cpc.famoustour.adapter.CustomAdapterProgram;
+import com.cpc.famoustour.adapter.CustomAdapterSchedule;
 import com.cpc.famoustour.model.Schedule;
+import com.cpc.famoustour.model.StaticClass;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -34,57 +27,42 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class ProgramManageFragment extends Fragment {
+public class ScheduleActivity extends AppCompatActivity {
 
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     int idUser;
     private ListView mListView;
-    private CustomAdapterProgram mAdapter;
+    private CustomAdapterSchedule mAdapter;
     ProgressBar progressBar;
     private static final int REFRESH_SCREEN = 1;
-    Intent intent;
-    Handler handle;
-    Runnable runable;
-
-
-    public ProgramManageFragment() {
-        // Required empty public constructor
-    }
-
+    StaticClass sc = new StaticClass();
+    int mDAY;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_program, container, false);
-        sp = getActivity().getSharedPreferences("App_Config", Context.MODE_PRIVATE);
-        idUser = sp.getInt("ID_USER", -1);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_schedule);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        progressBar = (ProgressBar) v.findViewById(R.id.pg_progress);
 
-        mListView = (ListView) v.findViewById(R.id.listView);
+        Bundle bundle = getIntent().getExtras();
+        mDAY = bundle.getInt("day");
+        idUser = bundle.getInt("IdUser");
+
+        Log.d("dayday", String.valueOf(mDAY));
+
+//        sp = getSharedPreferences("App_Config", Context.MODE_PRIVATE);
+//        idUser = sp.getInt("ID_USER", -1);
+
+        progressBar = (ProgressBar) findViewById(R.id.pg_progress);
+
+        mListView = (ListView) findViewById(R.id.listview_sc);
         mListView.setVisibility(View.INVISIBLE);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> arg, View arg1, int arg2, long arg3) {
-                Intent intent;
-                intent = new Intent(getActivity(), EditProgramActivity.class);
-                intent.putExtra("id_pgtour_sd", mAdapter.arrID.get(arg2));
-                intent.putExtra("id_pgtour", mAdapter.schedules.get(0).getID_PGTOUR());
-                startActivity(intent);
-
-                //Toast.makeText(getActivity(), mAdapter.arrID.get(arg2), Toast.LENGTH_LONG).show();
-            }
-        });
 
         //new GetSchedule().execute();
         startScan();
 
-
-        return v;
     }
 
     public void startScan() {
@@ -116,8 +94,6 @@ public class ProgramManageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity())
-                .setActionBarTitle("โปรแกรมทัวร์");
     }
 
 
@@ -132,9 +108,7 @@ public class ProgramManageFragment extends Fragment {
             Type collectionType = new TypeToken<List<Schedule>>() {
             }.getType();
             List<Schedule> schedules = gson.fromJson(result, collectionType);
-            //Schedule[] schedule = schedules.toArray(new Schedule[schedules.size()]);
-
-            //Log.d("schedule_ID", result);
+            //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
             return schedules;
         }
@@ -147,21 +121,23 @@ public class ProgramManageFragment extends Fragment {
 
     private void showData(List<Schedule> jsonString) {
         mListView.setVisibility(View.VISIBLE);
-        mAdapter = new CustomAdapterProgram(getActivity(), jsonString);
+        mAdapter = new CustomAdapterSchedule(this, jsonString);
         mListView.setAdapter(mAdapter);
     }
 
     private String feedJson() {
         try {
             OkHttpClient client = new OkHttpClient();
+            //Log.d("ooooooooooooo", String.valueOf(idUser));
 
             //Log.d("testestestestestest", String.valueOf(idUser));
             RequestBody body = new FormBody.Builder()
+                    .add("day", String.valueOf(mDAY))
                     .add("idUser", String.valueOf(idUser))
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_pgSchedule.php")
+                    .url(sc.URL + "/android_pgSchedule.php?type=time")
                     .post(body)
                     .build();
 
@@ -170,9 +146,13 @@ public class ProgramManageFragment extends Fragment {
             Log.d("Schedule", result);
             return result;
         } catch (Exception e) {
-
+            return null;
         }
-        return null;
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
 }

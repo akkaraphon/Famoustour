@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import com.cpc.famoustour.adapter.CustomAdapterProgram;
 import com.cpc.famoustour.model.Schedule;
+import com.cpc.famoustour.model.StaticClass;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -24,16 +26,16 @@ import okhttp3.Response;
 public class EditProgramActivity extends AppCompatActivity {
 
     String id_pgtour_sd;
-    String id_pgtour;
+    StaticClass sc = new StaticClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_program);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
         id_pgtour_sd = bundle.getString("id_pgtour_sd");
-        id_pgtour = bundle.getString("id_pgtour");
         new GetEdit().execute();
 
 
@@ -47,18 +49,24 @@ public class EditProgramActivity extends AppCompatActivity {
             Gson gson = new Gson();
 
 
-            Type collectionType = new TypeToken<List<Schedule>>() {
-            }.getType();
+            Type collectionType = new TypeToken<List<Schedule>>() {}.getType();
             List<Schedule> schedules = gson.fromJson(result, collectionType);
-            //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
-            //Log.d("testtest", result);
+            Log.d("Schedule_show",result);
+
             return schedules;
         }
 
         @Override
         protected void onPostExecute(List<Schedule> schedules) {
-            //schedules.get(0).getTIME_S_PGTOUR_SD();
+
+//            EditText Time_s = (EditText) findViewById(R.id.txt_time_S);
+//            EditText Time_e = (EditText) findViewById(R.id.txt_time_E);
+//            EditText Detail = (EditText) findViewById(R.id.txt_detail);
+//
+//            Time_s.setText(schedules.get(0).getTIME_S_PGTOUR_SD());
+//            Time_e.setText(schedules.get(0).getTIME_E_PGTOUR_SD());
+//            Detail.setText(schedules.get(0).getDETAIL_PGTOUR_SD());
         }
     }
 
@@ -69,23 +77,23 @@ public class EditProgramActivity extends AppCompatActivity {
             //Log.d("testestestestestest", String.valueOf(idUser));
             RequestBody body = new FormBody.Builder()
                     .add("id_pgtour_sd", String.valueOf(id_pgtour_sd))
-                    .add("idUser", getSharedPreferences("App_Config", Context.MODE_PRIVATE).getString("ID_USER",null))
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://famoustour.apidech.com/android_edit.php")
+                    .url(sc.URL + "/android_edit.php?edit=select")
                     .post(body)
                     .build();
 
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            Log.d("Schedule", result);
+
             return result;
         } catch (Exception e) {
-
+            return null;
         }
-        return null;
     }
+
+
 
     public class SetEdit extends AsyncTask<String, Void, String> {
 
