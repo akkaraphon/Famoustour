@@ -143,13 +143,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Log.d("Type Session", typeUser);
-            switch (position) {
-                case 0:
-                    return new ProgramFragment();
-                case 1:
-                    return new MapShowFragment();
-                default:
-                    return new OrtherFragment();
+            if (typeUser.equals("o")) {
+                switch (position) {
+                    case 0:
+                        return new ProgramFragment();
+                    case 1:
+                        return new MapShowOwnerFragment();
+                    default:
+                        return new OrtherFragment();
+                }
+            } else {
+                switch (position) {
+                    case 0:
+                        return new ProgramFragment();
+                    case 1:
+                        return new MapShowFragment();
+                    default:
+                        return new OrtherFragment();
+                }
             }
         }
 

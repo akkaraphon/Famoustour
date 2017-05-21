@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -32,6 +33,7 @@ public class ScheduleActivity extends AppCompatActivity {
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     int idUser;
+    java.util.Date noteTS;
     private ListView mListView;
     private CustomAdapterSchedule mAdapter;
     ProgressBar progressBar;

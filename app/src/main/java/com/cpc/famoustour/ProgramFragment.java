@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.LogRecord;
 
@@ -45,6 +48,7 @@ public class ProgramFragment extends Fragment {
     SharedPreferences.Editor editor;
     int idUser;
     private ListView mListView;
+    java.util.Date noteTS;
     private CustomAdapterProgram mAdapter;
     ProgressBar progressBar;
     private static final int REFRESH_SCREEN = 1;
@@ -73,13 +77,13 @@ public class ProgramFragment extends Fragment {
             public void onItemClick(AdapterView<?> arg, View arg1, int arg2, long arg3) {
                 Intent intent;
                 intent = new Intent(getActivity(), ScheduleActivity.class);
-                intent.putExtra("day", arg2+1);
-                Log.d("dayday", String.valueOf(arg2+1));
-                intent.putExtra("IdUser",idUser);
-                Log.d("ooooooooooooo2", String.valueOf(sp.getInt("ID_USER",-1)));
+                intent.putExtra("day", arg2 + 1);
+                Log.d("dayday", String.valueOf(arg2 + 1));
+                intent.putExtra("IdUser", idUser);
+                Log.d("ooooooooooooo2", String.valueOf(sp.getInt("ID_USER", -1)));
                 startActivity(intent);
 
-                Toast.makeText(getActivity(), "วันที่ " + String.valueOf(arg2+1) , Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "วันที่ " + String.valueOf(arg2 + 1), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -140,10 +144,10 @@ public class ProgramFragment extends Fragment {
             //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
             editor = sp.edit();
-            editor.putInt("ID_PGTOUR",days.get(0).getID_PGTOUR());
+            editor.putInt("ID_PGTOUR", days.get(0).getID_PGTOUR());
             editor.commit();
             Log.d("testtest", String.valueOf(days.get(0).getID_PGTOUR()));
-            Log.d("testtest", String.valueOf(sp.getInt("ID_PGTOUR",-1)));
+            Log.d("testtest", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
 
             Log.d("testtest", result);
             return days;
@@ -165,9 +169,23 @@ public class ProgramFragment extends Fragment {
         try {
             OkHttpClient client = new OkHttpClient();
 
-            //Log.d("testestestestestest", String.valueOf(idUser));
+            Calendar calander = Calendar.getInstance();
+            int cDay = calander.get(Calendar.DAY_OF_MONTH);
+            int cMonth = calander.get(Calendar.MONTH) + 8;
+            String Month = null;
+            if (cMonth <= 9) {
+                cMonth = calander.get(Calendar.MONTH) + 1;
+                Month = "0" + String.valueOf(cMonth);
+            }else{
+                Month = String.valueOf(cMonth);
+            }
+            int cYear = calander.get(Calendar.YEAR);
+
+            Log.d("datetime", String.valueOf(cYear + "-" + Month + "-" + cDay));
+
             RequestBody body = new FormBody.Builder()
                     .add("idUser", String.valueOf(idUser))
+                    .add("time", String.valueOf(cYear + "-" + cMonth + "-" + cDay))
                     .build();
 
             Request request = new Request.Builder()
