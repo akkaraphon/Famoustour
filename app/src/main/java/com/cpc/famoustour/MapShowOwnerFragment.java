@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 
 import com.cpc.famoustour.adapter.TimerTaskAdapter;
 import com.cpc.famoustour.model.GPS;
+import com.cpc.famoustour.model.LatLngChk;
 import com.cpc.famoustour.model.Schedule;
 import com.cpc.famoustour.model.StaticClass;
 import com.cpc.famoustour.model.User;
@@ -39,6 +42,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -54,6 +58,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
@@ -71,6 +77,7 @@ import static com.cpc.famoustour.model.StaticClass.GPS_LOST;
 public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback {
 
     Button _btnLost;
+    java.util.Date noteTS;
     Button _btnHere;
     private GoogleMap googleMap;
     StaticClass sc = new StaticClass();
@@ -105,33 +112,6 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
         TimerTaskAdapter timertask = new TimerTaskAdapter(getActivity(), v);
         new Timer().schedule(timertask, 0, 1000);
-
-        new GetLatLngAtc().execute();
-        _btnLost = (Button) v.findViewById(R.id.btn_Lost);
-        _btnLost.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onClick(View v) {
-
-                sendWithOtherThread("lost");
-                Log.d("Notufy", GPS_LOST);
-                //Log.d("lan,lng",getLocation().toString());
-                AlertDialog.Builder dialog;
-                dialog = new AlertDialog.Builder(v.getContext());
-                dialog.setTitle("หลงทาง");
-                dialog.setCancelable(true);
-                dialog.setMessage("ติดต่อเจ้าหน้าที่เรียบร้อย" + System.lineSeparator() + getLocation().toString());
-                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                //dialog.setMessage(myLocation.toString());
-
-
-                dialog.show();
-            }
-        });
-
 
         _btnHere = (Button) v.findViewById(R.id.btn_Here);
         _btnHere.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +156,7 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
     public LatLng getLocation() {
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
@@ -228,8 +208,7 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
             double lat;
             double lng;
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<GPS>>() {
-            }.getType();
+            Type collectionType = new TypeToken<List<GPS>>() {}.getType();
             List<GPS> gps = gson.fromJson(s, collectionType);
             //Log.d("StringJsonGPS", String.valueOf(gps));
             for (int i = 0; i < gps.size(); i++) {
@@ -268,14 +247,14 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
             switch (type) {
                 case "lost":
                     jNotification.put("title", "Help!");
-                    jNotification.put("body", "ฉันอยู่ที่นี้ : " + getLocation());
+                    jNotification.put("body", "ฉันอยู่ที่นี้ : " + sp.getString("NAME_TH_USER",""));
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
                     break;
                 case "out":
                     jNotification.put("title", "OUT!");
-                    jNotification.put("body", "ออกนอกเส้นทาง : " + getLocation());
+                    jNotification.put("body", "ออกนอกเส้นทาง : " + sp.getString("NAME_TH_USER",""));
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
@@ -336,9 +315,16 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         protected String doInBackground(String... params) {
             try {
                 OkHttpClient client = new OkHttpClient();
+                noteTS = Calendar.getInstance().getTime();
+
+                String time = "hhmm";
+                Log.d("TIME_TEST", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
+
+                //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
 
                 RequestBody body = new FormBody.Builder()
-                        .add("name_th", nameList.get(0).getNAME_TH())
+                        .add("idPgtour", String.valueOf(sp.getInt("ID_PGTOUR", -1)))
+                        .add("time", String.valueOf(DateFormat.format(time, noteTS)))
                         .build();
 
                 Request request = new Request.Builder()
@@ -356,19 +342,86 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            Log.d("runtime",result);
+
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            }
+            Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+//            Gson gson = new Gson();
+//            LatLngChk[] latLngChks = gson.fromJson(result, LatLngChk[].class);
+//            Log.d("runtime", String.valueOf(latLngChks[0]));
 
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<GPS>>() {
-            }.getType();
-            List<GPS> gps = gson.fromJson(s, collectionType);
+            Type collectionType = new TypeToken<List<LatLngChk>>() {}.getType();
+            List<LatLngChk> latLngChks = gson.fromJson(result, collectionType);
 
+            double lng = location.getLongitude();
+            double lat = location.getLatitude();
+
+            if(latLngChks.get(0).getID_ATTRAC().equals("-1")){
+                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
+
+                PolylineOptions rectLine = new PolylineOptions()
+                        .add(new LatLng(13.779438180291, 100.55793603029))
+                        .add(new LatLng(13.779438180291, 100.55523806971))
+                        .add(new LatLng(13.776740219709, 100.55523806971))
+                        .add(new LatLng(13.776740219709, 100.55793603029))
+                        .add(new LatLng(13.779438180291, 100.55793603029))
+                        .color(Color.RED);;
+
+                googleMap.addPolyline(rectLine);
+
+
+                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
+                    chk_noti = false;
+                }
+            }else{
+                double latST = latLngChks.get(0).getLAT_ST_ATTRAC();
+                double lngST = latLngChks.get(0).getLNG_ST_ATTRAC();
+                double latND = latLngChks.get(0).getLAT_ND_ATTRAC();
+                double lngND = latLngChks.get(0).getLNG_ND_ATTRAC();
+
+                PolylineOptions rectLine = new PolylineOptions()
+                        .add(new LatLng(latST, lngST))
+                        .add(new LatLng(latST, lngND))
+                        .add(new LatLng(latND, lngND))
+                        .add(new LatLng(latND, lngST))
+                        .add(new LatLng(latST, lngST));
+
+                googleMap.addPolyline(rectLine);
+
+                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
+                if((lat > latST || lng > lngST) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if((lat < latND || lng < lngND) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true){
+                    chk_noti = false;
+                }
+            }
         }
     }
 
 //    public void ChkArea(double lat1, double lng1, double lat2, double lng2) {
-        //getLatLng();
+    //getLatLng();
 //        if (lat >= lat1 && lng <= lng1 && lat >= lat2 && lng <= lng2) {
 //            if (chk_noti == false) {
 //                sendWithOtherThread("out");
@@ -382,4 +435,3 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
 //    }
 }
-

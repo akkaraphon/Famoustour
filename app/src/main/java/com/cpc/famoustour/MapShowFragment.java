@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -111,7 +113,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         TimerTaskAdapter timertask = new TimerTaskAdapter(getActivity(), v);
         new Timer().schedule(timertask, 0, 1000);
 
-        new GetLatLngAtc().execute();
+//        new GetLatLngAtc().execute();
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
         _btnLost.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -172,6 +174,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                 googlemap.clear();
                 googlemap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel));
                 new GetGPS().execute();
+                new GetLatLngAtc().execute();
                 handler.postDelayed(this, 3000);
             }
         };
@@ -278,7 +281,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                     break;
                 case "out":
                     jNotification.put("title", "OUT!");
-                    jNotification.put("body", "ออกนอกเส้นทาง : " + getLocation());
+                    jNotification.put("body", "ออกนอกเส้นทาง : " + sp.getString("NAME_TH_USER",""));
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
@@ -389,18 +392,56 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
             double lat = location.getLatitude();
 
             if(latLngChks.get(0).getID_ATTRAC().equals("-1")){
+                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
 
+                PolylineOptions rectLine = new PolylineOptions()
+                        .add(new LatLng(13.779438180291, 100.55793603029))
+                        .add(new LatLng(13.779438180291, 100.55523806971))
+                        .add(new LatLng(13.776740219709, 100.55523806971))
+                        .add(new LatLng(13.776740219709, 100.55793603029))
+                        .add(new LatLng(13.779438180291, 100.55793603029))
+                        .color(Color.RED);;
+
+                googleMap.addPolyline(rectLine);
+
+
+                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
+                    chk_noti = false;
+                }
             }else{
                 double latST = latLngChks.get(0).getLAT_ST_ATTRAC();
                 double lngST = latLngChks.get(0).getLNG_ST_ATTRAC();
                 double latND = latLngChks.get(0).getLAT_ND_ATTRAC();
                 double lngND = latLngChks.get(0).getLNG_ND_ATTRAC();
 
-                Log.d("runtime",latLngChks.get(0).getNAME_TH_ATTRAC());
+                PolylineOptions rectLine = new PolylineOptions()
+                        .add(new LatLng(latST, lngST))
+                        .add(new LatLng(latST, lngND))
+                        .add(new LatLng(latND, lngND))
+                        .add(new LatLng(latND, lngST))
+                        .add(new LatLng(latST, lngST));
 
-                if(lat >= latST && lng <= lngST && lat >= latND && lng <= lngND && chk_noti == false){
+                googleMap.addPolyline(rectLine);
+
+                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
+                if((lat > latST || lng > lngST) && chk_noti == false){
                     sendWithOtherThread("out");
                     chk_noti = true;
+                }
+                if((lat < latND || lng < lngND) && chk_noti == false){
+                    sendWithOtherThread("out");
+                    chk_noti = true;
+                }
+                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true){
+                    chk_noti = false;
                 }
             }
         }

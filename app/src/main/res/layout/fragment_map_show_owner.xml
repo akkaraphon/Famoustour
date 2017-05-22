@@ -43,13 +43,6 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/btn_Lost"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/ic_help" />
-
-            <Button
                 android:id="@+id/btn_navi"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

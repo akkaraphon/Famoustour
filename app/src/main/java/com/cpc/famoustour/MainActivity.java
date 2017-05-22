@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("Type Session", typeUser);
-            if (typeUser.equals("o")) {
+            Log.d("Type_Session", typeUser);
+            if (typeUser.equals("O")) {
                 switch (position) {
                     case 0:
                         return new ProgramFragment();

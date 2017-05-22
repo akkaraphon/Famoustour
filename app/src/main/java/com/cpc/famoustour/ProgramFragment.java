@@ -171,7 +171,7 @@ public class ProgramFragment extends Fragment {
 
             Calendar calander = Calendar.getInstance();
             int cDay = calander.get(Calendar.DAY_OF_MONTH);
-            int cMonth = calander.get(Calendar.MONTH) + 8;
+            int cMonth = calander.get(Calendar.MONTH) + 1;
             String Month = null;
             if (cMonth <= 9) {
                 cMonth = calander.get(Calendar.MONTH) + 1;
