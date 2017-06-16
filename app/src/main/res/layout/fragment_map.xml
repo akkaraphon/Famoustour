@@ -22,6 +22,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="40dp"
             android:layout_weight="2"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:orientation="horizontal"
             android:paddingBottom="40dp">
 
@@ -42,14 +44,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_help" />
-
-            <Button
-                android:id="@+id/btn_navi"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/ic_navi" />
 
         </LinearLayout>
 

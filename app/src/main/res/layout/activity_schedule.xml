@@ -20,10 +20,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ListView
-            android:id="@+id/listview_sc"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"></ListView>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/listview_sc"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+            </ListView>
+
+        </LinearLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -26,13 +25,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 import com.cpc.famoustour.adapter.TimerTaskAdapter;
 import com.cpc.famoustour.model.GPS;
 import com.cpc.famoustour.model.LatLngChk;
 import com.cpc.famoustour.model.Schedule;
 import com.cpc.famoustour.model.StaticClass;
-import com.cpc.famoustour.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -40,7 +37,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -58,9 +54,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -72,7 +66,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.cpc.famoustour.model.StaticClass.AUTH_KEY;
+import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
 import static com.cpc.famoustour.model.StaticClass.GPS_LOST;
+import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
+import static com.cpc.famoustour.model.StaticClass.STATUS_GPS;
 
 public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
@@ -90,6 +87,8 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
     List<Schedule> nameList;
     boolean chk_noti = false;
     SharedPreferences.Editor editor;
+    String ID_Help;
+    View v;
     ArrayList<String> TOKEN = new ArrayList<String>();
 
 
@@ -106,39 +105,64 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         _name = sp.getString("NAME_TH_USER", null) + " " + sp.getString("LASTNAME_TH_USER", null) + "(" + sp.getString("SEX_USER", null) + ")";
         _tel = sp.getString("TEL_USER", null);
 
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        v = inflater.inflate(R.layout.fragment_map, container, false);
         // Inflate the layout for this fragment
         mMap = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapView);
 
         TimerTaskAdapter timertask = new TimerTaskAdapter(getActivity(), v);
         new Timer().schedule(timertask, 0, 1000);
 
-//        new GetLatLngAtc().execute();
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
-        _btnLost.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onClick(View v) {
+        if(STATUS_GPS == 0){
+            _btnLost.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onClick(View v) {
 
-                sendWithOtherThread("lost");
-                Log.d("Notufy", GPS_LOST);
-                //Log.d("lan,lng",getLocation().toString());
-                AlertDialog.Builder dialog;
-                dialog = new AlertDialog.Builder(v.getContext());
-                dialog.setTitle("หลงทาง");
-                dialog.setCancelable(true);
-                dialog.setMessage("ติดต่อเจ้าหน้าที่เรียบร้อย" + System.lineSeparator() + getLocation().toString());
-                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                //dialog.setMessage(myLocation.toString());
+                    sendWithOtherThread("lost_out");
+                    Log.d("Notufy", GPS_LOST);
+                    //Log.d("lan,lng",getLocation().toString());
+                    AlertDialog.Builder dialog;
+                    dialog = new AlertDialog.Builder(v.getContext());
+                    dialog.setTitle("หลงทาง");
+                    dialog.setCancelable(true);
+                    dialog.setMessage("ติดต่อเจ้าหน้าที่เรียบร้อย");
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    //dialog.setMessage(myLocation.toString());
+                    dialog.show();
+                }
+            });
+        }else if(STATUS_GPS == 1){
+            _btnLost.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                @Override
+                public void onClick(View v) {
+
+                    sendWithOtherThread("lost_in");
+                    Log.d("Notufy", GPS_LOST);
+                    //Log.d("lan,lng",getLocation().toString());
+                    AlertDialog.Builder dialog;
+                    dialog = new AlertDialog.Builder(v.getContext());
+                    dialog.setTitle("หลงทาง");
+                    dialog.setCancelable(true);
+                    dialog.setMessage("ติดต่อเจ้าหน้าที่เรียบร้อย");
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            STATUS_GPS = 2;
+                            new SetStatus().execute();
+                        }
+                    });
+                    //dialog.setMessage(myLocation.toString());
+                    dialog.show();
+                }
+            });
+        }
 
 
-                dialog.show();
-            }
-        });
-
+//        new GetLatLngAtc().execute();
 
         _btnHere = (Button) v.findViewById(R.id.btn_Here);
         _btnHere.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +233,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
                 RequestBody body = new FormBody.Builder()
                         .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
-                        .add("idPgtour", String.valueOf(sp.getInt("ID_PGTOUR", -1)))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
                         .add("type", sp.getString("TYPE_USER", ""))
                         .build();
 
@@ -272,16 +296,23 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         JSONObject jData = new JSONObject();
         try {
             switch (type) {
-                case "lost":
-                    jNotification.put("title", "Help!");
-                    jNotification.put("body", "ฉันอยู่ที่นี้ : " + sp.getString("NAME_TH_USER",""));
+                case "lost_in":
+                    jNotification.put("title", "ลูกค้าต้องการความช่วยเหลือ!");
+                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ขอความช่วยเหลือ");
+                    jNotification.put("sound", "default");
+                    jNotification.put("badge", "1");
+                    jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    break;
+                case "lost_out":
+                    jNotification.put("title", "ลูกค้าต้องการความช่วยเหลือ!");
+                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ฉันหลงทาง");
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
                     break;
                 case "out":
-                    jNotification.put("title", "OUT!");
-                    jNotification.put("body", "ออกนอกเส้นทาง : " + sp.getString("NAME_TH_USER",""));
+                    jNotification.put("title", "ออกจากเส้นทาง!");
+                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ออกนอกเส้นทาง");
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
@@ -350,7 +381,8 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                 //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
 
                 RequestBody body = new FormBody.Builder()
-                        .add("idPgtour", String.valueOf(sp.getInt("ID_PGTOUR", -1)))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
+                        .add("date", DATE_SESSION)
                         .add("time", String.valueOf(DateFormat.format(time, noteTS)))
                         .build();
 
@@ -393,29 +425,29 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
             if(latLngChks.get(0).getID_ATTRAC().equals("-1")){
                 Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
-
-                PolylineOptions rectLine = new PolylineOptions()
-                        .add(new LatLng(13.779438180291, 100.55793603029))
-                        .add(new LatLng(13.779438180291, 100.55523806971))
-                        .add(new LatLng(13.776740219709, 100.55523806971))
-                        .add(new LatLng(13.776740219709, 100.55793603029))
-                        .add(new LatLng(13.779438180291, 100.55793603029))
-                        .color(Color.RED);;
-
-                googleMap.addPolyline(rectLine);
-
-
-                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
-                    sendWithOtherThread("out");
-                    chk_noti = true;
-                }
-                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
-                    sendWithOtherThread("out");
-                    chk_noti = true;
-                }
-                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
-                    chk_noti = false;
-                }
+//
+//                PolylineOptions rectLine = new PolylineOptions()
+//                        .add(new LatLng(13.779438180291, 100.55793603029))
+//                        .add(new LatLng(13.779438180291, 100.55523806971))
+//                        .add(new LatLng(13.776740219709, 100.55523806971))
+//                        .add(new LatLng(13.776740219709, 100.55793603029))
+//                        .add(new LatLng(13.779438180291, 100.55793603029))
+//                        .color(Color.RED);;
+//
+//                googleMap.addPolyline(rectLine);
+//
+//
+//                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
+//                    sendWithOtherThread("out");
+//                    chk_noti = true;
+//                }
+//                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
+//                    sendWithOtherThread("out");
+//                    chk_noti = true;
+//                }
+//                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
+//                    chk_noti = false;
+//                }
             }else{
                 double latST = latLngChks.get(0).getLAT_ST_ATTRAC();
                 double lngST = latLngChks.get(0).getLNG_ST_ATTRAC();
@@ -433,16 +465,47 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
                 Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
                 if((lat > latST || lng > lngST) && chk_noti == false){
+                    STATUS_GPS = 0;
                     sendWithOtherThread("out");
                     chk_noti = true;
                 }
                 if((lat < latND || lng < lngND) && chk_noti == false){
+                    STATUS_GPS = 0;
                     sendWithOtherThread("out");
                     chk_noti = true;
                 }
-                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true){
+                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true && STATUS_GPS != 2){
                     chk_noti = false;
+                    STATUS_GPS = 1;
                 }
+            }
+        }
+    }
+
+    public class SetStatus extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = new FormBody.Builder()
+                        .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
+                        .add("status" , String.valueOf(STATUS_GPS))
+                        .add("idPgtour" , String.valueOf(IDPGTOUR))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(sc.URL + "/android_GPS.php?type=setLost")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String result = response.body().string();
+
+                return result;
+            } catch (Exception e) {
+                return null;
             }
         }
     }

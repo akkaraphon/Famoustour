@@ -6,15 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -24,15 +21,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
-
 
 import com.cpc.famoustour.adapter.TimerTaskAdapter;
 import com.cpc.famoustour.model.GPS;
 import com.cpc.famoustour.model.LatLngChk;
-import com.cpc.famoustour.model.Schedule;
 import com.cpc.famoustour.model.StaticClass;
-import com.cpc.famoustour.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -40,7 +33,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -58,9 +50,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -72,11 +62,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.cpc.famoustour.model.StaticClass.AUTH_KEY;
-import static com.cpc.famoustour.model.StaticClass.GPS_LOST;
+import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
+import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
 
 public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback {
 
-    Button _btnLost;
+    Button _btnNavi;
     java.util.Date noteTS;
     Button _btnHere;
     private GoogleMap googleMap;
@@ -84,12 +75,11 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
     MapFragment mMap;
     SharedPreferences sp;
     public String _name;
+    String Name_help = "ไม่มี";
     public String _tel;
-    List<GPS> gpsList;
-    private TextView mTextView;
-    List<Schedule> nameList;
     boolean chk_noti = false;
     SharedPreferences.Editor editor;
+    String ID_Help = " ";
     ArrayList<String> TOKEN = new ArrayList<String>();
 
 
@@ -103,6 +93,7 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
         sp = getActivity().getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         editor = sp.edit();
+        Log.d("TypeU", sp.getString("TYPE_USER", ""));
         _name = sp.getString("NAME_TH_USER", null) + " " + sp.getString("LASTNAME_TH_USER", null) + "(" + sp.getString("SEX_USER", null) + ")";
         _tel = sp.getString("TEL_USER", null);
 
@@ -121,7 +112,33 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(getLocation()).zoom(20).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 googleMap.clear();
-                googleMap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel));
+                googleMap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel)).showInfoWindow();
+            }
+        });
+
+        _btnNavi = (Button) v.findViewById(R.id.btn_navi);
+        _btnNavi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d("lan,lng",getLocation().toString());
+                new ChkStatus().execute();
+                AlertDialog.Builder dialog;
+                dialog = new AlertDialog.Builder(v.getContext());
+                dialog.setTitle("ช่วยเหลือ");
+                dialog.setCancelable(true);
+                dialog.setMessage("ให้ความช่วยเหลือ : " + Name_help);
+                dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        new SetStatus().execute();
+                        //Log.d("Testtsjsjsjsjsjs",Name_help);
+                    }
+                });
+                dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                //dialog.setMessage(myLocation.toString());
+                dialog.show();
             }
         });
 
@@ -138,17 +155,17 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         new GetGPS().execute();
         CameraPosition cameraPosition = new CameraPosition.Builder().target(getLocation()).zoom(20).build();
         googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        googlemap.clear();
-        googlemap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel));
+        //googlemap.clear();
+        googlemap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel)).showInfoWindow();
         final Handler handler = new Handler();
         final Runnable worker = new Runnable() {
             @Override
             public void run() {
                 googlemap.clear();
-                googlemap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel));
+                googlemap.addMarker(new MarkerOptions().position(getLocation()).title(_name).snippet(_tel)).showInfoWindow();
                 new GetGPS().execute();
                 new GetLatLngAtc().execute();
-                handler.postDelayed(this, 3000);
+                handler.postDelayed(this, 5000);
             }
         };
         handler.post(worker);
@@ -182,18 +199,21 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
                 RequestBody body = new FormBody.Builder()
                         .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
-                        .add("idPgtour", String.valueOf(sp.getInt("ID_PGTOUR", -1)))
-                        .add("type", sp.getString("TYPE_USER", ""))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
+                        .add("type", "O")
                         .build();
 
                 Request request = new Request.Builder()
-                        .url(sc.URL + "/android_GPS.php?type=get")
+                        .url(sc.URL + "/android_GPS.php")
                         .post(body)
                         .build();
 
                 Response response = client.newCall(request).execute();
                 String result = response.body().string();
 
+                //Log.d("StringJsonGPS", String.valueOf(result));
+
+                Log.d("ID", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
                 Log.d("TimerTask2", result);
 
                 return result;
@@ -208,9 +228,10 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
             double lat;
             double lng;
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<GPS>>() {}.getType();
+            Type collectionType = new TypeToken<List<GPS>>() {
+            }.getType();
             List<GPS> gps = gson.fromJson(s, collectionType);
-            //Log.d("StringJsonGPS", String.valueOf(gps));
+
             for (int i = 0; i < gps.size(); i++) {
 //                Log.d("StringJsonGPS", String.valueOf(gps.get(i).getLAT_GPS()));
 //                Log.d("StringJsonGPS", String.valueOf(i));
@@ -218,11 +239,27 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                 lng = gps.get(i).getLONG_GPS();
                 TOKEN.add(gps.get(i).getTOKEN_USER());
                 Log.d("StringJsonGPS", TOKEN.get(0));
+                String name = gps.get(i).getNAME();
+                String tel = gps.get(i).getTEL_USER();
+                Log.d("TEL_USER", s);
 
                 LatLng latLng = new LatLng(lat, lng);
-                googleMap.addMarker(new MarkerOptions().position(latLng).title(gps.get(i).getNAME()).snippet(gps.get(i).getTEL_USER()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                if (i == gps.size()) {
-                    googleMap.clear();
+                Log.d("gpstest", String.valueOf(gps.get(i).getSTATUS_GPS()));
+                if (gps.get(i).getSTATUS_GPS() == 1) {
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(tel).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).showInfoWindow();
+                    if (i == gps.size()) {
+                        googleMap.clear();
+                    }
+                } else if (gps.get(i).getSTATUS_GPS() == 2) {
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(tel).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))).showInfoWindow();
+                    if (i == gps.size()) {
+                        googleMap.clear();
+                    }
+                } else {
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(tel).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))).showInfoWindow();
+                    if (i == gps.size()) {
+                        googleMap.clear();
+                    }
                 }
             }
 
@@ -245,16 +282,9 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         JSONObject jData = new JSONObject();
         try {
             switch (type) {
-                case "lost":
-                    jNotification.put("title", "Help!");
-                    jNotification.put("body", "ฉันอยู่ที่นี้ : " + sp.getString("NAME_TH_USER",""));
-                    jNotification.put("sound", "default");
-                    jNotification.put("badge", "1");
-                    jNotification.put("click_action", "OPEN_ACTIVITY_1");
-                    break;
                 case "out":
-                    jNotification.put("title", "OUT!");
-                    jNotification.put("body", "ออกนอกเส้นทาง : " + sp.getString("NAME_TH_USER",""));
+                    jNotification.put("title", "ออกจากเส้นทาง!");
+                    jNotification.put("body", "ออกนอกเส้นทาง : " + sp.getString("NAME_TH_USER", ""));
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
@@ -323,8 +353,9 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                 //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
 
                 RequestBody body = new FormBody.Builder()
-                        .add("idPgtour", String.valueOf(sp.getInt("ID_PGTOUR", -1)))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
                         .add("time", String.valueOf(DateFormat.format(time, noteTS)))
+                        .add("date", DATE_SESSION)
                         .build();
 
                 Request request = new Request.Builder()
@@ -345,7 +376,7 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            Log.d("runtime",result);
+            Log.d("runtime", result);
 
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -358,38 +389,39 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 //            Log.d("runtime", String.valueOf(latLngChks[0]));
 
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<LatLngChk>>() {}.getType();
+            Type collectionType = new TypeToken<List<LatLngChk>>() {
+            }.getType();
             List<LatLngChk> latLngChks = gson.fromJson(result, collectionType);
 
             double lng = location.getLongitude();
             double lat = location.getLatitude();
 
-            if(latLngChks.get(0).getID_ATTRAC().equals("-1")){
-                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
+            if (latLngChks.get(0).getID_ATTRAC().equals("-1")) {
+                Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
 
-                PolylineOptions rectLine = new PolylineOptions()
-                        .add(new LatLng(13.779438180291, 100.55793603029))
-                        .add(new LatLng(13.779438180291, 100.55523806971))
-                        .add(new LatLng(13.776740219709, 100.55523806971))
-                        .add(new LatLng(13.776740219709, 100.55793603029))
-                        .add(new LatLng(13.779438180291, 100.55793603029))
-                        .color(Color.RED);;
-
-                googleMap.addPolyline(rectLine);
-
-
-                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
-                    sendWithOtherThread("out");
-                    chk_noti = true;
-                }
-                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
-                    sendWithOtherThread("out");
-                    chk_noti = true;
-                }
-                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
-                    chk_noti = false;
-                }
-            }else{
+//                PolylineOptions rectLine = new PolylineOptions()
+//                        .add(new LatLng(13.779438180291, 100.55793603029))
+//                        .add(new LatLng(13.779438180291, 100.55523806971))
+//                        .add(new LatLng(13.776740219709, 100.55523806971))
+//                        .add(new LatLng(13.776740219709, 100.55793603029))
+//                        .add(new LatLng(13.779438180291, 100.55793603029))
+//                        .color(Color.RED);;
+//
+//                googleMap.addPolyline(rectLine);
+//
+//
+//                if((lat > 13.779438180291 || lng > 100.55793603029) && chk_noti == false){
+//                    sendWithOtherThread("out");
+//                    chk_noti = true;
+//                }
+//                if((lat < 13.776740219709 || lng < 100.55523806971) && chk_noti == false){
+//                    sendWithOtherThread("out");
+//                    chk_noti = true;
+//                }
+//                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
+//                    chk_noti = false;
+//                }
+            } else {
                 double latST = latLngChks.get(0).getLAT_ST_ATTRAC();
                 double lngST = latLngChks.get(0).getLNG_ST_ATTRAC();
                 double latND = latLngChks.get(0).getLAT_ND_ATTRAC();
@@ -404,34 +436,84 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
 
                 googleMap.addPolyline(rectLine);
 
-                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
-                if((lat > latST || lng > lngST) && chk_noti == false){
+                Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
+                if ((lat > latST || lng > lngST) && chk_noti == false) {
                     sendWithOtherThread("out");
                     chk_noti = true;
                 }
-                if((lat < latND || lng < lngND) && chk_noti == false){
+                if ((lat < latND || lng < lngND) && chk_noti == false) {
                     sendWithOtherThread("out");
                     chk_noti = true;
                 }
-                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true){
+                if (lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true) {
                     chk_noti = false;
                 }
             }
         }
     }
 
-//    public void ChkArea(double lat1, double lng1, double lat2, double lng2) {
-    //getLatLng();
-//        if (lat >= lat1 && lng <= lng1 && lat >= lat2 && lng <= lng2) {
-//            if (chk_noti == false) {
-//                sendWithOtherThread("out");
-//                chk_noti = true;
-//            }
-//            //sendWithOtherThread("out");
-//
-//        } else {
-//            chk_noti = false;
-//        }
 
-//    }
+    public class ChkStatus extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = new FormBody.Builder()
+                        .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(sc.URL + "/android_GPS.php?type=chk")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String result = response.body().string();
+
+                return result;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Gson gson = new Gson();
+            Type collectionType = new TypeToken<List<GPS>>() {
+            }.getType();
+            List<GPS> gps = gson.fromJson(result, collectionType);
+            Name_help = gps.get(0).getNAME();
+            ID_Help = gps.get(0).getID_GPS();
+        }
+    }
+
+    public class SetStatus extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = new FormBody.Builder()
+                        .add("idGps", ID_Help)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(sc.URL + "/android_GPS.php?type=setH")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String result = response.body().string();
+
+                return result;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
 }

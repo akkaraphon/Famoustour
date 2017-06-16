@@ -4,23 +4,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cpc.famoustour.adapter.TimerTaskAdapter;
 import com.cpc.famoustour.model.StaticClass;
-
-import java.util.Timer;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -143,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Log.d("Type_Session", typeUser);
-            if (typeUser.equals("O")) {
+            if (typeUser.equals("O") || typeUser.equals("G") || typeUser.equals("E")) {
                 switch (position) {
                     case 0:
                         return new ProgramFragment();

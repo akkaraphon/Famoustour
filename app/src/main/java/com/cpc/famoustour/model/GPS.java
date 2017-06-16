@@ -15,16 +15,16 @@ public class GPS {
      * ID_PGTOUR : 7
      */
 
-    private String ID_GPS;
     private String TIMESTAMP_GPS;
     private double LAT_GPS;
     private double LONG_GPS;
-    private String STATUS_GPS;
+    private int STATUS_GPS;
     private String ID_USER;
     private String ID_PGTOUR;
     private String TOKEN_USER;
     private String NAME;
     private String TEL_USER;
+    private String ID_GPS;
 
     public double getLAT_GPS() {
         return LAT_GPS;
@@ -39,6 +39,12 @@ public class GPS {
     }
 
     public void setLONG_GPS(double LONG_GPS) { this.LONG_GPS = LONG_GPS; }
+
+    public int getSTATUS_GPS() {
+        return STATUS_GPS;
+    }
+
+    public void setSTATUS_GPS(int STATUS_GPS) { this.STATUS_GPS = STATUS_GPS; }
 
     public String getID_USER() { return ID_USER; }
 
@@ -63,4 +69,8 @@ public class GPS {
     public void setTEL_USER(String TEL_USER) {
         this.TEL_USER = TEL_USER;
     }
+
+    public String getID_GPS() { return ID_GPS; }
+
+    public void setID_GPS(String ID_GPS) { this.ID_GPS = ID_GPS; }
 }

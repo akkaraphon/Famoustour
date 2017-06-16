@@ -30,8 +30,6 @@ import okhttp3.Response;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    SharedPreferences sp;
-    SharedPreferences.Editor editor;
     int idUser;
     java.util.Date noteTS;
     private ListView mListView;

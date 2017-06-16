@@ -9,15 +9,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cpc.famoustour.adapter.CustomAdapterProgram;
@@ -27,16 +27,17 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.LogRecord;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
+import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
 
 
 /**
@@ -46,6 +47,17 @@ public class ProgramFragment extends Fragment {
 
     SharedPreferences sp;
     SharedPreferences.Editor editor;
+    private com.fourmob.datetimepicker.date.DatePickerDialog mDatePicker;
+
+    private Calendar mCalendar;
+
+    int mYear;
+    int mMonth;
+    int mDay;
+    String textDate;
+
+    Button mDateButton;
+    TextView TextDate;
     int idUser;
     private ListView mListView;
     java.util.Date noteTS;
@@ -53,6 +65,7 @@ public class ProgramFragment extends Fragment {
     ProgressBar progressBar;
     private static final int REFRESH_SCREEN = 1;
     StaticClass sc = new StaticClass();
+    View v;
 
 
     public ProgramFragment() {
@@ -64,7 +77,7 @@ public class ProgramFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_program, container, false);
+        v = inflater.inflate(R.layout.fragment_program, container, false);
         sp = getActivity().getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         idUser = sp.getInt("ID_USER", -1);
 
@@ -90,10 +103,50 @@ public class ProgramFragment extends Fragment {
         //new GetSchedule().execute();
         startScan();
 
+//        mCalendar = Calendar.getInstance();
+//        mYear = mCalendar.get(Calendar.YEAR);
+//        mMonth = mCalendar.get(Calendar.MONTH);
+//        mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+//        SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd ");
+//        mCalendar.set(mYear, mMonth, mDay);
+//        Date date = mCalendar.getTime();
+//        DATE_SESSION = mdformat.format(date);
+//
+//        Log.d("dateSess",DATE_SESSION);
+
+
+//        TextDate = (TextView) v.findViewById(R.id.data_date);
+//        DatePickerDialog.OnDateSetListener onDateSetListener =
+//                new DatePickerDialog.OnDateSetListener() {
+//                    @Override
+//                    public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+//                        SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd ");
+//                        mCalendar.set(year, month, day);
+//                        Date date = mCalendar.getTime();
+//                        DATE_SESSION = mdformat.format(date);
+//                        TextDate.setText(DATE_SESSION);
+//                        new GetDay().execute();
+//                    }
+//                };
+//
+//        mDatePicker = DatePickerDialog.newInstance(onDateSetListener,
+//                mCalendar.get(Calendar.YEAR),       // ปี
+//                mCalendar.get(Calendar.MONTH),      // เดือน
+//                mCalendar.get(Calendar.DAY_OF_MONTH),// วัน (1-31)
+//                false);
+//
+//        mDateButton = (Button) v.findViewById(R.id.button_date);
+//
+//        mDateButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDatePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
+//            }
+//        });
 
         return v;
 
-    }
+}
 
     public void startScan() {
         new Thread() {
@@ -130,34 +183,38 @@ public class ProgramFragment extends Fragment {
     }
 
 
-    public class GetDay extends AsyncTask<Object, Object, List<Day>> {
+public class GetDay extends AsyncTask<Object, Object, List<Day>> {
 
-        @Override
-        protected List<Day> doInBackground(Object... params) {
-            String result = feedJson();
-            Gson gson = new Gson();
+    @Override
+    protected List<Day> doInBackground(Object... params) {
+        String result = feedJson();
+        Gson gson = new Gson();
 
 
-            Type collectionType = new TypeToken<List<Day>>() {
-            }.getType();
-            List<Day> days = gson.fromJson(result, collectionType);
-            //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
+        Type collectionType = new TypeToken<List<Day>>() {
+        }.getType();
+        List<Day> days = gson.fromJson(result, collectionType);
+        //Schedule[] schedule = enums.toArray(new Schedule[enums.size()]);
 
-            editor = sp.edit();
-            editor.putInt("ID_PGTOUR", days.get(0).getID_PGTOUR());
-            editor.commit();
-            Log.d("testtest", String.valueOf(days.get(0).getID_PGTOUR()));
-            Log.d("testtest", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
+//        editor = sp.edit();
+//        editor.putInt("ID_PGTOUR", days.get(0).getID_PGTOUR());
+//        editor.commit();
+        IDPGTOUR = days.get(0).getID_PGTOUR();
+        Log.d("IDPGTOUR", String.valueOf(days.get(0).getID_PGTOUR()));
+        Log.d("testtest", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
 
-            Log.d("testtest", result);
-            return days;
-        }
+        //Log.d("testtest", days.get());
 
-        @Override
-        protected void onPostExecute(List<Day> s) {
-            showData(s);
-        }
+
+        return days;
     }
+
+    @Override
+    protected void onPostExecute(List<Day> s) {
+        showData(s);
+    }
+
+}
 
     private void showData(List<Day> jsonString) {
         mListView.setVisibility(View.VISIBLE);
@@ -176,16 +233,17 @@ public class ProgramFragment extends Fragment {
             if (cMonth <= 9) {
                 cMonth = calander.get(Calendar.MONTH) + 1;
                 Month = "0" + String.valueOf(cMonth);
-            }else{
+            } else {
                 Month = String.valueOf(cMonth);
             }
             int cYear = calander.get(Calendar.YEAR);
 
-            Log.d("datetime", String.valueOf(cYear + "-" + Month + "-" + cDay));
+            Log.d("datetime", String.valueOf(DATE_SESSION));
+            Log.d("datetime", String.valueOf(idUser));
 
             RequestBody body = new FormBody.Builder()
                     .add("idUser", String.valueOf(idUser))
-                    .add("time", String.valueOf(cYear + "-" + cMonth + "-" + cDay))
+                    .add("time", cYear + "-" + Month + "-" + cDay)
                     .build();
 
             Request request = new Request.Builder()
