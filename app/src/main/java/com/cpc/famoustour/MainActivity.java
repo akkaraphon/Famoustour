@@ -23,12 +23,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import static com.cpc.famoustour.model.StaticClass.TYPE_USER;
 
 public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    String typeUser;
     String emailUser;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         editor = sp.edit();
 
         Bundle bundle = getIntent().getExtras();
-        typeUser = bundle.getString("type");
+        TYPE_USER = sp.getString("TYPE_USER","");
         emailUser = bundle.getString("email");
 
 
@@ -138,8 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("Type_Session", typeUser);
-            if (typeUser.equals("O") || typeUser.equals("G") || typeUser.equals("E")) {
+            //Log.d("Type_Session", TYPE_USER);
+            if (TYPE_USER.equals("O") || TYPE_USER.equals("G") || TYPE_USER.equals("E")) {
                 switch (position) {
                     case 0:
                         return new ProgramFragment();

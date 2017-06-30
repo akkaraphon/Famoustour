@@ -1,3 +1,4 @@
+
 <resources>
     <string name="app_name">Famoustour</string>
     <string name="title_activity_main">MainActivity</string>
@@ -12,4 +13,13 @@
     <string name="button_previous">PREVIOUS</string>
     <string name="title_activity_program_day_tab">ProgramDayTabActivity</string>
     <string name="title_activity_program_day">ProgramDayActivity</string>
+
+    <string-array name="club">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
 </resources>

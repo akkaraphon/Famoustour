@@ -3,7 +3,7 @@ package com.cpc.famoustour;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,8 +48,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -62,7 +63,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.cpc.famoustour.model.StaticClass.AUTH_KEY;
-import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
 import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
 
 public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback {
@@ -78,8 +78,10 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
     String Name_help = "ไม่มี";
     public String _tel;
     boolean chk_noti = false;
+    boolean chk_noti_time = false;
     SharedPreferences.Editor editor;
     String ID_Help = " ";
+    String timeNow;
     ArrayList<String> TOKEN = new ArrayList<String>();
 
 
@@ -121,24 +123,9 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 //Log.d("lan,lng",getLocation().toString());
-                new ChkStatus().execute();
-                AlertDialog.Builder dialog;
-                dialog = new AlertDialog.Builder(v.getContext());
-                dialog.setTitle("ช่วยเหลือ");
-                dialog.setCancelable(true);
-                dialog.setMessage("ให้ความช่วยเหลือ : " + Name_help);
-                dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        new SetStatus().execute();
-                        //Log.d("Testtsjsjsjsjsjs",Name_help);
-                    }
-                });
-                dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                //dialog.setMessage(myLocation.toString());
-                dialog.show();
+                Intent intent;
+                intent = new Intent(getActivity(), CallMemberActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -281,6 +268,7 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
         try {
+            JSONArray ja = new JSONArray();
             switch (type) {
                 case "out":
                     jNotification.put("title", "ออกจากเส้นทาง!");
@@ -288,16 +276,20 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
+                    break;
+                case "timeout":
+                    jNotification.put("title", "ใกล้เวลาเปลี่ยนสถานที่!");
+                    jNotification.put("body", "ใกล้หมดเวลารบกวนรวมตัวเพื่อเปลี่ยนสถานที่");
+                    jNotification.put("sound", "default");
+                    jNotification.put("badge", "1");
+                    jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
                     break;
             }
 
 //            Log.d("StringJsonGPSSS", TOKEN.get(0));
 //            Log.d("StringJsonGPSSS", FirebaseInstanceId.getInstance().getToken());
-            JSONArray ja = new JSONArray();
-            for (int i = 0; i < TOKEN.size(); i++) {
-                ja.put(TOKEN.get(i));
-            }
-            ja.put(FirebaseInstanceId.getInstance().getToken());
             jPayload.put("registration_ids", ja);
 
 
@@ -347,15 +339,30 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                 OkHttpClient client = new OkHttpClient();
                 noteTS = Calendar.getInstance().getTime();
 
-                String time = "hhmm";
-                Log.d("TIME_TEST", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
+                String time = "HHmm";
+                Log.d("TIME_TEST", String.valueOf(DateFormat.format(time, noteTS)));
+
+                Calendar mCalendar = Calendar.getInstance();
+                int mYear = mCalendar.get(Calendar.YEAR);
+                int mMonth = mCalendar.get(Calendar.MONTH);
+                int mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+                SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd");
+                mCalendar.set(mYear, mMonth, mDay);
+                Date date = mCalendar.getTime();
+                String strDate = mdformat.format(date);
+
+                timeNow = String.valueOf(DateFormat.format(time, noteTS));
+
+                Log.d("DATENOW", strDate);
+                Log.d("DATENOW", String.valueOf(IDPGTOUR));
+                Log.d("DATENOW", timeNow);
 
                 //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
 
                 RequestBody body = new FormBody.Builder()
                         .add("idPgtour", String.valueOf(IDPGTOUR))
-                        .add("time", String.valueOf(DateFormat.format(time, noteTS)))
-                        .add("date", DATE_SESSION)
+                        .add("time", timeNow)
+                        .add("date", strDate)
                         .build();
 
                 Request request = new Request.Builder()
@@ -435,6 +442,17 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                         .add(new LatLng(latST, lngST));
 
                 googleMap.addPolyline(rectLine);
+                int mTime = Integer.parseInt(timeNow);
+                Log.d("mTime", "chk_noti : " + String.valueOf(chk_noti_time));
+
+                if (latLngChks.get(0).getTIME_E_PGTOUR_SD() - 10 == mTime && !chk_noti_time) {
+                    chk_noti_time = true;
+                    Log.d("mTime2", "chk_noti if: " + String.valueOf(chk_noti_time));
+                    sendWithOtherThread("timeout");
+                } else if (latLngChks.get(0).getTIME_S_PGTOUR_SD() == mTime) {
+                    Log.d("mTime2", "chk_noti elseif: " + String.valueOf(mTime));
+                    chk_noti_time = false;
+                }
 
                 Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
                 if ((lat > latST || lng > lngST) && chk_noti == false) {
@@ -448,71 +466,6 @@ public class MapShowOwnerFragment extends Fragment implements OnMapReadyCallback
                 if (lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true) {
                     chk_noti = false;
                 }
-            }
-        }
-    }
-
-
-    public class ChkStatus extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                OkHttpClient client = new OkHttpClient();
-
-                RequestBody body = new FormBody.Builder()
-                        .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
-                        .add("idPgtour", String.valueOf(IDPGTOUR))
-                        .build();
-
-                Request request = new Request.Builder()
-                        .url(sc.URL + "/android_GPS.php?type=chk")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                String result = response.body().string();
-
-                return result;
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<GPS>>() {
-            }.getType();
-            List<GPS> gps = gson.fromJson(result, collectionType);
-            Name_help = gps.get(0).getNAME();
-            ID_Help = gps.get(0).getID_GPS();
-        }
-    }
-
-    public class SetStatus extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                OkHttpClient client = new OkHttpClient();
-
-                RequestBody body = new FormBody.Builder()
-                        .add("idGps", ID_Help)
-                        .build();
-
-                Request request = new Request.Builder()
-                        .url(sc.URL + "/android_GPS.php?type=setH")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                String result = response.body().string();
-
-                return result;
-            } catch (Exception e) {
-                return null;
             }
         }
     }

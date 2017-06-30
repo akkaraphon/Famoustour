@@ -1,5 +1,7 @@
 package com.cpc.famoustour.model;
 
+import java.util.ArrayList;
+
 /**
  * Created by macbook on 5/2/17.
  */
@@ -13,5 +15,13 @@ public class StaticClass {
     public static int IDPGTOUR;
     public static int STATUS_GPS = 1;
     public static int STATUS_CHK_LOST = 0;
+    public static String TYPE_USER = "";
+    public static ArrayList<String> NAME_LIST = new ArrayList<String>();
+    public static ArrayList<String> TEL_LIST = new ArrayList<String>();
+    public static ArrayList<String> STATUS_LIST = new ArrayList<String>();
+    public static ArrayList<String> ID_USER_LIST = new ArrayList<String>();
+    public static int STATUS_EVA;
+    public static String DATE_B;
+
 
 }

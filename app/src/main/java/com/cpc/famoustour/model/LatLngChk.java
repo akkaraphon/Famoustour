@@ -19,8 +19,8 @@ public class LatLngChk {
     private double LNG_ST_ATTRAC;
     private double LAT_ND_ATTRAC;
     private double LNG_ND_ATTRAC;
-    private String TIME_S_PGTOUR_SD;
-    private String TIME_E_PGTOUR_SD;
+    private int TIME_S_PGTOUR_SD;
+    private int TIME_E_PGTOUR_SD;
 
     public String getID_ATTRAC() {
         return ID_ATTRAC;
@@ -70,19 +70,19 @@ public class LatLngChk {
         this.LNG_ND_ATTRAC = LNG_ND_ATTRAC;
     }
 
-    public String getTIME_S_PGTOUR_SD() {
+    public int getTIME_S_PGTOUR_SD() {
         return TIME_S_PGTOUR_SD;
     }
 
-    public void setTIME_S_PGTOUR_SD(String TIME_S_PGTOUR_SD) {
+    public void setTIME_S_PGTOUR_SD(int TIME_S_PGTOUR_SD) {
         this.TIME_S_PGTOUR_SD = TIME_S_PGTOUR_SD;
     }
 
-    public String getTIME_E_PGTOUR_SD() {
+    public int getTIME_E_PGTOUR_SD() {
         return TIME_E_PGTOUR_SD;
     }
 
-    public void setTIME_E_PGTOUR_SD(String TIME_E_PGTOUR_SD) {
+    public void setTIME_E_PGTOUR_SD(int TIME_E_PGTOUR_SD) {
         this.TIME_E_PGTOUR_SD = TIME_E_PGTOUR_SD;
     }
 }

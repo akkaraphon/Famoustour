@@ -2,10 +2,8 @@ package com.cpc.famoustour;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,6 +56,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         _address.setText("ที่อยู่ " + sp.getString("ADDRESS_USER", null));
         _birthday.setText("วัน/เดือน/ปีเกิด " + sp.getString("BIRTHDAY_USER", null).substring(0, 10));
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

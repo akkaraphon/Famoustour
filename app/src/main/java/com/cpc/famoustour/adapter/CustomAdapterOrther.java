@@ -1,15 +1,17 @@
 package com.cpc.famoustour.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cpc.famoustour.R;
+
+import static com.cpc.famoustour.model.StaticClass.TYPE_USER;
 
 /**
  * Created by macbook on 4/20/17.
@@ -17,9 +19,12 @@ import com.cpc.famoustour.R;
 
 public class CustomAdapterOrther extends BaseAdapter {
     private Context mContext;
+    private int mStatus;
+    SharedPreferences sp;
 
-    public CustomAdapterOrther(Context context) {
+    public CustomAdapterOrther(Context context, int Status_eva) {
         mContext = context;
+        mStatus = Status_eva;
     }
 
     public int getCount() {
@@ -66,10 +71,11 @@ public class CustomAdapterOrther extends BaseAdapter {
                 textView.setGravity(Gravity.CENTER);
                 break;
             default:
-                textView.setCompoundDrawablesWithIntrinsicBounds(0,R.drawable.fromsubmit ,0, 0);
-                textView.setText("ตอบแบบสอบถาม");
-                textView.setEnabled(false);
-                textView.setGravity(Gravity.CENTER);
+                if(TYPE_USER.equals("M") && mStatus != 1) {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.fromsubmit, 0, 0);
+                    textView.setText("ตอบแบบสอบถาม");
+                    textView.setGravity(Gravity.CENTER);
+                }
                 break;
         }
         return textView;

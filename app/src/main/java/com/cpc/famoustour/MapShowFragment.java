@@ -53,8 +53,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
@@ -66,7 +68,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.cpc.famoustour.model.StaticClass.AUTH_KEY;
-import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
 import static com.cpc.famoustour.model.StaticClass.GPS_LOST;
 import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
 import static com.cpc.famoustour.model.StaticClass.STATUS_GPS;
@@ -113,7 +114,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         new Timer().schedule(timertask, 0, 1000);
 
         _btnLost = (Button) v.findViewById(R.id.btn_Lost);
-        if(STATUS_GPS == 0){
+        if (STATUS_GPS == 0) {
             _btnLost.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
@@ -135,7 +136,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                     dialog.show();
                 }
             });
-        }else if(STATUS_GPS == 1){
+        } else if (STATUS_GPS == 1) {
             _btnLost.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
@@ -148,6 +149,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                     dialog = new AlertDialog.Builder(v.getContext());
                     dialog.setTitle("หลงทาง");
                     dialog.setCancelable(true);
+                    chk_noti = true;
                     dialog.setMessage("ติดต่อเจ้าหน้าที่เรียบร้อย");
                     dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -259,7 +261,8 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
             double lat;
             double lng;
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<GPS>>() {}.getType();
+            Type collectionType = new TypeToken<List<GPS>>() {
+            }.getType();
             List<GPS> gps = gson.fromJson(s, collectionType);
             //Log.d("StringJsonGPS", String.valueOf(gps));
             for (int i = 0; i < gps.size(); i++) {
@@ -295,37 +298,42 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
         try {
+            JSONArray ja = new JSONArray();
             switch (type) {
                 case "lost_in":
                     jNotification.put("title", "ลูกค้าต้องการความช่วยเหลือ!");
-                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ขอความช่วยเหลือ");
+                    jNotification.put("body", sp.getString("NAME_TH_USER", "") + ": ขอความช่วยเหลือ");
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    for (int i = 0; i < TOKEN.size(); i++) {
+                        ja.put(TOKEN.get(i));
+                    }
                     break;
                 case "lost_out":
                     jNotification.put("title", "ลูกค้าต้องการความช่วยเหลือ!");
-                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ฉันหลงทาง");
+                    jNotification.put("body", sp.getString("NAME_TH_USER", "") + ": ฉันหลงทาง");
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    for (int i = 0; i < TOKEN.size(); i++) {
+                        ja.put(TOKEN.get(i));
+                    }
                     break;
                 case "out":
                     jNotification.put("title", "ออกจากเส้นทาง!");
-                    jNotification.put("body", sp.getString("NAME_TH_USER","") + ": ออกนอกเส้นทาง");
+                    jNotification.put("body", sp.getString("NAME_TH_USER", "") + ": ออกนอกเส้นทาง");
                     jNotification.put("sound", "default");
                     jNotification.put("badge", "1");
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
                     break;
             }
 
 //            Log.d("StringJsonGPSSS", TOKEN.get(0));
 //            Log.d("StringJsonGPSSS", FirebaseInstanceId.getInstance().getToken());
-            JSONArray ja = new JSONArray();
-            for (int i = 0; i < TOKEN.size(); i++) {
-                ja.put(TOKEN.get(i));
-            }
-            ja.put(FirebaseInstanceId.getInstance().getToken());
+
+
             jPayload.put("registration_ids", ja);
 
 
@@ -378,11 +386,21 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                 String time = "hhmm";
                 Log.d("TIME_TEST", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
 
+                Calendar mCalendar = Calendar.getInstance();
+                int  mYear = mCalendar.get(Calendar.YEAR);
+                int mMonth = mCalendar.get(Calendar.MONTH);
+                int mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+                SimpleDateFormat mdformat = new SimpleDateFormat("yyyy-MM-dd");
+                mCalendar.set(mYear, mMonth, mDay);
+                Date date = mCalendar.getTime();
+                String strDate = mdformat.format(date);
+
+                Log.d("DATENOW",strDate);
                 //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
 
                 RequestBody body = new FormBody.Builder()
                         .add("idPgtour", String.valueOf(IDPGTOUR))
-                        .add("date", DATE_SESSION)
+                        .add("date", strDate)
                         .add("time", String.valueOf(DateFormat.format(time, noteTS)))
                         .build();
 
@@ -404,7 +422,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            Log.d("runtime",result);
+            Log.d("runtime", result);
 
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -417,14 +435,15 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 //            Log.d("runtime", String.valueOf(latLngChks[0]));
 
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<List<LatLngChk>>() {}.getType();
+            Type collectionType = new TypeToken<List<LatLngChk>>() {
+            }.getType();
             List<LatLngChk> latLngChks = gson.fromJson(result, collectionType);
 
             double lng = location.getLongitude();
             double lat = location.getLatitude();
 
-            if(latLngChks.get(0).getID_ATTRAC().equals("-1")){
-                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
+            if (latLngChks.get(0).getID_ATTRAC().equals("-1")) {
+                Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
 //
 //                PolylineOptions rectLine = new PolylineOptions()
 //                        .add(new LatLng(13.779438180291, 100.55793603029))
@@ -448,7 +467,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 //                if(lat < 13.779438180291 && lng < 100.55793603029 && lat > 13.776740219709 && lng > 100.55523806971 && chk_noti == true){
 //                    chk_noti = false;
 //                }
-            }else{
+            } else {
                 double latST = latLngChks.get(0).getLAT_ST_ATTRAC();
                 double lngST = latLngChks.get(0).getLNG_ST_ATTRAC();
                 double latND = latLngChks.get(0).getLAT_ND_ATTRAC();
@@ -463,19 +482,22 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addPolyline(rectLine);
 
-                Log.d("testtest", "chk_noti : "+String.valueOf(chk_noti));
-                if((lat > latST || lng > lngST) && chk_noti == false){
+                Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
+                if ((lat > latST || lng > lngST) && chk_noti == false) {
                     STATUS_GPS = 0;
                     sendWithOtherThread("out");
+                    new SetStatus().execute();
                     chk_noti = true;
                 }
-                if((lat < latND || lng < lngND) && chk_noti == false){
+                if ((lat < latND || lng < lngND) && chk_noti == false) {
                     STATUS_GPS = 0;
                     sendWithOtherThread("out");
+                    new SetStatus().execute();
                     chk_noti = true;
                 }
-                if(lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true && STATUS_GPS != 2){
+                if (lat < latST && lng < lngST && lat > latND && lng > lngND && chk_noti == true && STATUS_GPS != 2) {
                     chk_noti = false;
+                    new SetStatus().execute();
                     STATUS_GPS = 1;
                 }
             }
@@ -489,10 +511,12 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
             try {
                 OkHttpClient client = new OkHttpClient();
 
+                Log.d("App_test",String.valueOf(sp.getInt("ID_USER", -1))+" : "+String.valueOf(STATUS_GPS)+" : "+String.valueOf(IDPGTOUR));
+
                 RequestBody body = new FormBody.Builder()
                         .add("idUser", String.valueOf(sp.getInt("ID_USER", -1)))
-                        .add("status" , String.valueOf(STATUS_GPS))
-                        .add("idPgtour" , String.valueOf(IDPGTOUR))
+                        .add("status", String.valueOf(STATUS_GPS))
+                        .add("idPgtour", String.valueOf(IDPGTOUR))
                         .build();
 
                 Request request = new Request.Builder()
@@ -511,7 +535,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
     }
 
 //    public void ChkArea(double lat1, double lng1, double lat2, double lng2) {
-        //getLatLng();
+    //getLatLng();
 //        if (lat >= lat1 && lng <= lng1 && lat >= lat2 && lng <= lng2) {
 //            if (chk_noti == false) {
 //                sendWithOtherThread("out");

@@ -21,6 +21,7 @@ public class Schedule {
     private String DETAIL_PGTOUR_SD;
     private String NAME_TH;
     private int ID_PGTOUR_SD;
+    private String FILE_PGTOUR;
 
     public String getDAY_PGTOUR_SD() {
         return DAY_PGTOUR_SD;
@@ -68,5 +69,13 @@ public class Schedule {
 
     public void setID_PGTOUR_SD(int ID_PGTOUR_SD) {
         this.ID_PGTOUR_SD = ID_PGTOUR_SD;
+    }
+
+    public String getFILE_PGTOUR() {
+        return FILE_PGTOUR;
+    }
+
+    public void setFILE_PGTOUR(String FILE_PGTOUR) {
+        this.FILE_PGTOUR = FILE_PGTOUR;
     }
 }

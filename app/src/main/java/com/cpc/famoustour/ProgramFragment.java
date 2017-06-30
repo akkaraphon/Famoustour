@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 import okhttp3.FormBody;
@@ -49,15 +49,7 @@ public class ProgramFragment extends Fragment {
     SharedPreferences.Editor editor;
     private com.fourmob.datetimepicker.date.DatePickerDialog mDatePicker;
 
-    private Calendar mCalendar;
-
-    int mYear;
-    int mMonth;
-    int mDay;
-    String textDate;
-
-    Button mDateButton;
-    TextView TextDate;
+    TextView namePGTOUR;
     int idUser;
     private ListView mListView;
     java.util.Date noteTS;
@@ -82,6 +74,7 @@ public class ProgramFragment extends Fragment {
         idUser = sp.getInt("ID_USER", -1);
 
         progressBar = (ProgressBar) v.findViewById(R.id.pg_progress);
+        namePGTOUR = (TextView) v.findViewById(R.id.namePGTOUR);
 
 
         mListView = (ListView) v.findViewById(R.id.listView);
@@ -220,6 +213,7 @@ public class GetDay extends AsyncTask<Object, Object, List<Day>> {
         mListView.setVisibility(View.VISIBLE);
         mAdapter = new CustomAdapterProgram(getActivity(), jsonString);
         mListView.setAdapter(mAdapter);
+        new GetNameTH().execute();
     }
 
     private String feedJson() {
@@ -248,6 +242,53 @@ public class GetDay extends AsyncTask<Object, Object, List<Day>> {
 
             Request request = new Request.Builder()
                     .url(sc.URL + "/android_pgSchedule.php?type=day")
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String result = response.body().string();
+            Log.d("Schedulesss", result);
+
+            return result;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+
+    public class GetNameTH extends AsyncTask<Object, Object, String> {
+
+        @Override
+        protected String doInBackground(Object... params) {
+            String result = feedJson2();
+            Gson gson = new Gson();
+            Type collectionType = new TypeToken<Collection<Day>>() {}.getType();
+            Collection<Day> enums = gson.fromJson(result, collectionType);
+            Day[] user = enums.toArray(new Day[enums.size()]);
+
+            return user[0].getNAME_TH_PGTOUR();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(!s.equals("-1")){
+                namePGTOUR.setText(s);
+            }
+        }
+
+    }
+
+    private String feedJson2() {
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = new FormBody.Builder()
+                    .add("id_pgtour", String.valueOf(IDPGTOUR))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(sc.URL + "/android_pgSchedule.php?type=name")
                     .post(body)
                     .build();
 
