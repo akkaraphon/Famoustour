@@ -1,12 +1,12 @@
 package com.cpc.famoustour.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cpc.famoustour.R;
@@ -52,7 +52,6 @@ public class MemberListAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView name;
-        LinearLayout statusBar;
         TextView detail;
         TextView status;
         ImageView status_photo;
@@ -68,7 +67,6 @@ public class MemberListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.list_member_detail, parent, false);
             mViewHolder = new MemberListAdapter.ViewHolder();
 
-            mViewHolder.statusBar = (LinearLayout) convertView.findViewById(R.id.statusBar);
             mViewHolder.name = (TextView) convertView.findViewById(R.id.name);
             mViewHolder.status = (TextView) convertView.findViewById(R.id.status);
             mViewHolder.detail = (TextView) convertView.findViewById(R.id.detail);
@@ -80,25 +78,31 @@ public class MemberListAdapter extends BaseAdapter {
         }
 
         GPS gps = _gps.get(position);
-        if(gps.getNAME().equals("-1")){
-            mViewHolder.statusBar.setVisibility(View.INVISIBLE);
+        if (gps.getNAME().equals("-1")) {
+            mViewHolder.status.setVisibility(View.INVISIBLE);
             mViewHolder.name.setText("ไม่มีรายการทัวร์");
-        }else{
-            if(TYPE_USER.equals("M")){
-                mViewHolder.statusBar.setVisibility(View.INVISIBLE);
+        } else {
+            if (TYPE_USER.equals("M")) {
                 mViewHolder.name.setText(gps.getNAME());
+                Log.d("type_user", gps.getTYPE_USER());
+                if (gps.getTYPE_USER().equals("M")) {
+                    mViewHolder.status.setVisibility(View.INVISIBLE);
+                } else {
+                    mViewHolder.status.setVisibility(View.VISIBLE);
+                    mViewHolder.status.setText(" (หัวหน้าทัวร์)");
+                }
                 mViewHolder.detail.setText(gps.getTEL_USER());
-            }else{
-                mViewHolder.statusBar.setVisibility(View.VISIBLE);
+            } else {
+                mViewHolder.status.setVisibility(View.VISIBLE);
                 mViewHolder.name.setText(gps.getNAME());
-                if(gps.getSTATUS_GPS() == 1){
-                    mViewHolder.status.setText("ปกติ");
+                if (gps.getSTATUS_GPS() == 1) {
+                    mViewHolder.status.setText("สถานะ : ปกติ");
                     Picasso.with(mContext).load(R.drawable.icon_success).into(mViewHolder.status_photo);
-                }else if(gps.getSTATUS_GPS() == 0){
-                    mViewHolder.status.setText("หลงทาง");
+                } else if (gps.getSTATUS_GPS() == 0) {
+                    mViewHolder.status.setText("สถานะ : หลงทาง");
                     Picasso.with(mContext).load(R.drawable.icon_lost).into(mViewHolder.status_photo);
-                }else{
-                    mViewHolder.status.setText("ขอความช่วยเหลือ");
+                } else {
+                    mViewHolder.status.setText("สถานะ : ขอความช่วยเหลือ");
                     Picasso.with(mContext).load(R.drawable.icon_help).into(mViewHolder.status_photo);
                 }
                 mViewHolder.detail.setText(gps.getTEL_USER());

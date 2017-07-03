@@ -25,6 +25,7 @@ public class GPS {
     private String NAME;
     private String TEL_USER;
     private String ID_GPS;
+    private String TYPE_USER;
 
     public double getLAT_GPS() {
         return LAT_GPS;
@@ -73,4 +74,8 @@ public class GPS {
     public String getID_GPS() { return ID_GPS; }
 
     public void setID_GPS(String ID_GPS) { this.ID_GPS = ID_GPS; }
+
+    public String getTYPE_USER() { return TYPE_USER; }
+
+    public void setTYPE_USER(String TYPE_USER) { this.TYPE_USER = TYPE_USER; }
 }

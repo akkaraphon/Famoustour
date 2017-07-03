@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.cpc.famoustour.adapter.MemberListAdapter;
 import com.cpc.famoustour.model.GPS;
@@ -56,7 +55,7 @@ public class CallMemberActivity extends AppCompatActivity {
                 intent = new Intent(CallMemberActivity.this, MemberDetailActivity.class);
                 intent.putExtra("position", arg2);
                 startActivity(intent);
-                Toast.makeText(CallMemberActivity.this, String.valueOf(arg2), Toast.LENGTH_LONG).show();
+                //Toast.makeText(CallMemberActivity.this, String.valueOf(arg2), Toast.LENGTH_LONG).show();
             }
         });
     }

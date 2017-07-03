@@ -156,11 +156,16 @@ public class MemberDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<GPS> _gps) {
             super.onPostExecute(_gps);
-            name.setText(_gps.get(0).getNAME());
+            if(_gps.get(0).getTYPE_USER().equals("M")) {
+                name.setText(_gps.get(0).getNAME());
+                status.setVisibility(View.INVISIBLE);
+            }else{
+                name.setText(_gps.get(0).getNAME());
+                status.setText(" (หัวหน้าทัวร์)");
+            }
             tel.setText(_gps.get(0).getTEL_USER());
             //ID_USER_LIST;
             if(TYPE_USER.equals("M")){
-                status.setVisibility(View.INVISIBLE);
                 btnOK.setVisibility(View.INVISIBLE);
             }else{
                 if(_gps.get(0).getSTATUS_GPS() == 1){

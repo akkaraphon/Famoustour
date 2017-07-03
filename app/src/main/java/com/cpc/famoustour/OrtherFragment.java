@@ -1,12 +1,16 @@
 package com.cpc.famoustour;
 
 
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +46,14 @@ import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
 public class OrtherFragment extends Fragment {
 
     SharedPreferences sp;
-    SharedPreferences.Editor editor;
+
+    ProgressDialog progressBar;
+    int click_do = 0;
+    int size;
+    private int progressBarStatus = 0;
+    private Handler progressBarHandler = new Handler();
+    private long fileSize = 2000000;
+
     Intent intent;
     String str_pdf;
     private static String file_url = "http://famoustour.apidech.com/pdf/";
@@ -60,7 +71,7 @@ public class OrtherFragment extends Fragment {
         sp = getActivity().getSharedPreferences("App_Config", Context.MODE_PRIVATE);
         // Inflate the layout for this fragment
         GridView gridview = (GridView) v.findViewById(R.id.gridview);
-        gridview.setAdapter(new CustomAdapterOrther(getContext(),sp.getInt("STATUS_EVA",-1)));
+        gridview.setAdapter(new CustomAdapterOrther(getContext(), sp.getInt("STATUS_EVA", -1)));
         new GetPDF().execute();
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -78,7 +89,50 @@ public class OrtherFragment extends Fragment {
                         startActivity(intent);
                         break;
                     case 2:
+                        click_do = 1;
                         new DownloadFile().execute(file_url + str_pdf, str_pdf);
+                        progressBar = new ProgressDialog(v.getContext());
+                        progressBar.setCancelable(true);
+                        progressBar.setMessage("File downloading ...");
+                        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                        progressBar.setProgress(0);
+                        progressBar.setMax(100);
+                        progressBar.show();
+
+                        progressBarStatus = 0;
+
+                        new Thread(new Runnable() {
+                            public void run() {
+                                while (progressBarStatus < 100) {
+                                    progressBarStatus = doSomeTasks();
+                                    Log.d("progressBarStatus", String.valueOf(progressBarStatus));
+                                    progressBarHandler.post(new Runnable() {
+                                        public void run() {
+                                            progressBar.setProgress(progressBarStatus);
+                                        }
+                                    });
+                                }
+                                if (progressBarStatus >= 100) {
+                                    try {
+                                        Thread.sleep(2000);
+                                        progressBar.dismiss();
+                                        File pdfFile = new File(Environment.getExternalStorageDirectory() + "/PDF PROGRAMTOUR/" + str_pdf);
+                                        Uri path = Uri.fromFile(pdfFile);
+                                        Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
+                                        pdfIntent.setDataAndType(path, "application/pdf");
+                                        pdfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                                        try {
+                                            startActivity(pdfIntent);
+                                        } catch (ActivityNotFoundException e) {
+                                            Toast.makeText(getActivity(), "No Application available to view PDF", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }).start();
                         break;
                     case 3:
                         Toast.makeText(getActivity(), "ข้อมูลรูปภาพ", Toast.LENGTH_SHORT).show();
@@ -93,8 +147,6 @@ public class OrtherFragment extends Fragment {
                 }
             }
         });
-
-
         return v;
     }
 
@@ -106,6 +158,7 @@ public class OrtherFragment extends Fragment {
                 .setActionBarTitle("อื่นๆ");
     }
 
+
     private class DownloadFile extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -113,17 +166,20 @@ public class OrtherFragment extends Fragment {
             String fileUrl = strings[0];   // -> http://maven.apache.org/maven-1.x/maven.pdf
             String fileName = strings[1];  // -> maven.pdf
             String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            File folder = new File(extStorageDirectory, "testthreepdf");
+            File folder = new File(extStorageDirectory, "PDF PROGRAMTOUR");
             folder.mkdir();
 
             File pdfFile = new File(folder, fileName);
-
+            Log.d("catch_log", fileUrl);
             try {
                 pdfFile.createNewFile();
             } catch (IOException e) {
+                Log.d("catch_log", String.valueOf(e));
                 e.printStackTrace();
             }
-            FileDownloader.downloadFile(fileUrl, pdfFile);
+            if (click_do == 1) {
+                FileDownloader.downloadFile(fileUrl, pdfFile);
+            }
             return null;
         }
     }
@@ -162,7 +218,37 @@ public class OrtherFragment extends Fragment {
             }.getType();
             List<Schedule> schedule = gson.fromJson(s, collectionType);
             str_pdf = schedule.get(0).getFILE_PGTOUR();
+            new DownloadFile().execute(file_url + str_pdf, str_pdf);
         }
+
+    }
+
+
+    public int doSomeTasks() {
+        while (size <= fileSize) {
+            size++;
+            Log.d("progressBarStatus", String.valueOf(size));
+            if (size == fileSize * 0.1) {
+                return 10;
+            } else if (size == fileSize * 0.2) {
+                return 20;
+            } else if (size == fileSize * 0.3) {
+                return 30;
+            } else if (size == fileSize * 0.4) {
+                return 40;
+            } else if (size == fileSize * 0.5) {
+                return 50;
+            } else if (size == fileSize * 0.6) {
+                return 60;
+            } else if (size == fileSize * 0.7) {
+                return 70;
+            } else if (size == fileSize * 0.8) {
+                return 80;
+            } else if (size == fileSize * 0.9) {
+                return 90;
+            }
+        }
+        return 100;
     }
 
 }

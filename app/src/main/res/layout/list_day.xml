@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/day_schedule"
-        android:layout_width="wrap_content"
+        android:id="@+id/date_sd"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="8dp"
-        android:layout_marginLeft="60dp"
-        android:layout_weight="4"
+        android:layout_marginLeft="20dp"
         android:text="DAY"
-        android:textSize="40dp"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/day_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="100dp"
+        android:text="DAY"
+        android:textSize="30dp"
         android:textStyle="bold" />
 
 

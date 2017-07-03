@@ -27,7 +27,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 
 import okhttp3.FormBody;
@@ -38,6 +37,7 @@ import okhttp3.Response;
 
 import static com.cpc.famoustour.model.StaticClass.DATE_SESSION;
 import static com.cpc.famoustour.model.StaticClass.IDPGTOUR;
+import static com.cpc.famoustour.model.StaticClass.DATE_B;
 
 
 /**
@@ -257,23 +257,25 @@ public class GetDay extends AsyncTask<Object, Object, List<Day>> {
     }
 
 
-    public class GetNameTH extends AsyncTask<Object, Object, String> {
+    public class GetNameTH extends AsyncTask<Object, Object, List<Day>> {
 
         @Override
-        protected String doInBackground(Object... params) {
+        protected List<Day> doInBackground(Object... params) {
             String result = feedJson2();
             Gson gson = new Gson();
-            Type collectionType = new TypeToken<Collection<Day>>() {}.getType();
-            Collection<Day> enums = gson.fromJson(result, collectionType);
-            Day[] user = enums.toArray(new Day[enums.size()]);
+            Type collectionType = new TypeToken<List<Day>>() {
+            }.getType();
+            List<Day> days = gson.fromJson(result, collectionType);
 
-            return user[0].getNAME_TH_PGTOUR();
+            return days;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            if(!s.equals("-1")){
-                namePGTOUR.setText(s);
+        protected void onPostExecute(List<Day> day) {
+            if(!day.get(0).getNAME_TH_PGTOUR().equals("-1")){
+                namePGTOUR.setText(day.get(0).getNAME_TH_PGTOUR());
+                DATE_B = day.get(0).getDATE_B_PGTOUR();
+                Log.d("listlistlist",day.get(0).getDATE_B_PGTOUR());
             }
         }
 

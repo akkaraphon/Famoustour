@@ -87,7 +87,9 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
     private TextView mTextView;
     List<Schedule> nameList;
     boolean chk_noti = false;
+    boolean chk_noti_time = false;
     SharedPreferences.Editor editor;
+    String timeNow;
     String ID_Help;
     View v;
     ArrayList<String> TOKEN = new ArrayList<String>();
@@ -328,6 +330,14 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                     jNotification.put("click_action", "OPEN_ACTIVITY_1");
                     ja.put(FirebaseInstanceId.getInstance().getToken());
                     break;
+                case "timeout":
+                    jNotification.put("title", "ใกล้เวลาเปลี่ยนสถานที่!");
+                    jNotification.put("body", "ใกล้หมดเวลารบกวนรวมตัวเพื่อเปลี่ยนสถานที่");
+                    jNotification.put("sound", "default");
+                    jNotification.put("badge", "1");
+                    jNotification.put("click_action", "OPEN_ACTIVITY_1");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
+                    break;
             }
 
 //            Log.d("StringJsonGPSSS", TOKEN.get(0));
@@ -383,7 +393,7 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                 OkHttpClient client = new OkHttpClient();
                 noteTS = Calendar.getInstance().getTime();
 
-                String time = "hhmm";
+                String time = "HHmm";
                 Log.d("TIME_TEST", String.valueOf(sp.getInt("ID_PGTOUR", -1)));
 
                 Calendar mCalendar = Calendar.getInstance();
@@ -397,11 +407,12 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
 
                 Log.d("DATENOW",strDate);
                 //.add("time", String.valueOf(DateFormat.format(time, noteTS)))
+                timeNow = String.valueOf(DateFormat.format(time, noteTS));
 
                 RequestBody body = new FormBody.Builder()
                         .add("idPgtour", String.valueOf(IDPGTOUR))
                         .add("date", strDate)
-                        .add("time", String.valueOf(DateFormat.format(time, noteTS)))
+                        .add("time", timeNow)
                         .build();
 
                 Request request = new Request.Builder()
@@ -481,6 +492,17 @@ public class MapShowFragment extends Fragment implements OnMapReadyCallback {
                         .add(new LatLng(latST, lngST));
 
                 googleMap.addPolyline(rectLine);
+                int mTime = Integer.parseInt(timeNow);
+                Log.d("mTime", "chk_noti : " + String.valueOf(chk_noti_time));
+
+                if (latLngChks.get(0).getTIME_E_PGTOUR_SD() - 10 == mTime && !chk_noti_time) {
+                    chk_noti_time = true;
+                    Log.d("mTime2", "chk_noti if: " + String.valueOf(chk_noti_time));
+                    sendWithOtherThread("timeout");
+                } else if (latLngChks.get(0).getTIME_S_PGTOUR_SD() == mTime) {
+                    Log.d("mTime2", "chk_noti elseif: " + String.valueOf(mTime));
+                    chk_noti_time = false;
+                }
 
                 Log.d("testtest", "chk_noti : " + String.valueOf(chk_noti));
                 if ((lat > latST || lng > lngST) && chk_noti == false) {

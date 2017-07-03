@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="ความพึ่งพอใจการท่องเที่ยวโดยร่วม"
+                android:text="ความพึงพอใจในการเดินทาง"
                 android:textSize="20dp" />
 
             <Spinner
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="ความพึ่งพอใจในรสชาติอาหาร"
+                android:text="ความพึงพอใจด้านที่พักและโรงแรม"
                 android:textSize="20dp" />
 
             <Spinner
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="ความพึ่งพอใจในที่พักอาศัย"
+                android:text="ความพึงพอใจด้านที่พักและโรงแรม"
                 android:textSize="20dp" />
 
             <Spinner

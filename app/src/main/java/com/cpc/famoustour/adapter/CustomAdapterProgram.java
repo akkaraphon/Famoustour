@@ -11,6 +11,12 @@ import android.widget.TextView;
 import com.cpc.famoustour.R;
 import com.cpc.famoustour.model.Day;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -50,6 +56,7 @@ public class CustomAdapterProgram extends BaseAdapter {
 
     private static class ViewHolder {
         TextView day_schedule;
+        TextView date_sd;
 
     }
 
@@ -60,6 +67,7 @@ public class CustomAdapterProgram extends BaseAdapter {
             mViewHolder = new ViewHolder();
 
             mViewHolder.day_schedule = (TextView) convertView.findViewById(R.id.day_schedule);
+            mViewHolder.date_sd = (TextView) convertView.findViewById(R.id.date_sd);
 
             convertView.setTag(mViewHolder);
 
@@ -72,81 +80,37 @@ public class CustomAdapterProgram extends BaseAdapter {
         //Log.d("testtest", day.getDAY_PGTOUR_SD());
 
         if (day.getDAY_PGTOUR_SD() == 1) {
-            mViewHolder.day_schedule.setText("วันที่ : " + day.getDATE_G_PGTOUR());
+            String testDateString = day.getDATE_G_PGTOUR();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date d1 = df.parse(testDateString);
+                mViewHolder.date_sd.setText(new SimpleDateFormat("dd-MMM-yy").format(d1));
+                mViewHolder.day_schedule.setText("วันที่ 1 ");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else if (day.getDAY_PGTOUR_SD() == -1) {
             mViewHolder.day_schedule.setText("ไม่มีโปรแกรมทัวร์ในช่วงนี้");
         } else {
-            String str_date = day.getDATE_G_PGTOUR();
-            String[] arrDate = str_date.split("-");
-            y = Integer.parseInt(arrDate[0]);
-            m = Integer.parseInt(arrDate[1]);
-            d = Integer.parseInt(arrDate[2]) + 1;
-            if (m == 1 && m == 3 && m == 5 && m == 7 && m == 8 && m == 10 && m == 12) {
-                if (m <= 9) {
-                    if (d <= 31) {
-                        if(d <= 9){
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                        }else{
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-" + d);
-                        }
-                    } else {
-                        m = m + 1;
-                        d = d - 31;
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                    }
-                } else {
-                    if (d <= 31) {
-                        if(d <= 9){
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                        }else{
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-" + d);
-                        }
-                    } else {
-                        m = m + 1;
-                        d = d - 31;
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-" + m + "-0" + d);
-                    }
-                }
-            } else if (m == 2) {
-                if (d <= 28) {
-                    if(d <= 9){
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                    }else{
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-" + d);
-                    }
-                } else {
-                    m = m + 1;
-                    d = d - 28;
-                    mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                }
-            } else {
-                if (m <= 9) {
-                    if (d <= 30) {
-                        if(d <= 9){
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                        }else{
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-" + d);
-                        }
-                    } else {
-                        m = m + 1;
-                        d = d - 30;
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                    }
-                } else {
-                    if (d <= 30) {
-                        if(d <= 9){
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-0" + d);
-                        }else{
-                            mViewHolder.day_schedule.setText("วันที่ : " + y + "-0" + m + "-" + d);
-                        }
-                    } else {
-                        m = m + 1;
-                        d = d - 30;
-                        mViewHolder.day_schedule.setText("วันที่ : " + y + "-" + m + "-0" + d);
-                    }
-                }
+            String testDateString = day.getDATE_G_PGTOUR();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date d1 = df.parse(testDateString);
+                Date newD1 = addDays(d1,position);
+                mViewHolder.date_sd.setText(new SimpleDateFormat("dd-MMM-yy").format(newD1));
+                mViewHolder.day_schedule.setText("วันที่ " + (position + 1));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
         return convertView;
+    }
+
+    public static Date addDays(Date date, int days) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+
+        return cal.getTime();
     }
 }
